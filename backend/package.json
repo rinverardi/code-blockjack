@@ -1,14 +1,4 @@
 {
-  "name": "@zama-ai/fhevm-hardhat-template",
-  "description": "fhEVM hardhat template",
-  "version": "1.0.0",
-  "engines": {
-    "node": ">=20.0.0"
-  },
-  "author": {
-    "name": "zama-ai",
-    "url": "https://github.com/zama-ai"
-  },
   "devDependencies": {
     "@eslint/js": "^9.9.0",
     "@nomicfoundation/hardhat-chai-matchers": "^2.0.0",
@@ -56,6 +46,7 @@
     "sha3": "^2.1.4",
     "solhint": "^3.4.0",
     "solhint-plugin-prettier": "^0.0.5",
+    "solidity-comments-linux-x64-gnu": "^0.1.1",
     "solidity-coverage": "0.8.12",
     "sqlite3": "^5.1.7",
     "ts-generator": "^0.1.1",
@@ -65,36 +56,42 @@
     "typescript-eslint": "^8.0.1",
     "web3-validator": "^2.0.6"
   },
+  "description": "Blockjack Backend",
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "files": [
     "contracts"
   ],
   "keywords": [
     "blockchain",
-    "ethers",
     "ethereum",
+    "ethers",
     "hardhat",
     "smart-contracts",
     "solidity",
     "template",
-    "typescript",
-    "typechain"
+    "typechain",
+    "typescript"
   ],
+  "name": "blockjack-backend",
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
-    "clean": "rimraf ./artifacts ./cache ./coverage ./types ./coverage.json && pnpm typechain",
+    "clean": "rimraf ./artifacts ./cache ./coverage ./types ./coverage.json",
     "compile": "cross-env TS_NODE_TRANSPILE_ONLY=true hardhat compile",
-    "lint": "pnpm lint:sol && pnpm lint:ts && pnpm prettier:check",
-    "lint:sol": "solhint --max-warnings 25 \"contracts/**/*.sol\"",
-    "lint:ts": "eslint .",
-    "postinstall": "DOTENV_CONFIG_PATH=./.env.example pnpm typechain",
-    "prettier:check": "prettier --check \"**/*.{js,json,md,sol,ts,yml}\"",
-    "prettier:write": "prettier --write \"**/*.{js,json,md,sol,ts,yml}\"",
-    "typechain": "cross-env TS_NODE_TRANSPILE_ONLY=true hardhat typechain",
-    "test": "hardhat test --network hardhat",
     "coverage": "hardhat coverage",
     "deploy-sepolia": "hardhat deploy --network sepolia",
-    "mint-sepolia": "hardhat mint --amount 42 --network sepolia"
-  }
+    "lint": "pnpm lint:sol && pnpm lint:ts && pnpm prettier:check",
+    "lint:sol": "solhint contracts/*.sol",
+    "lint:ts": "eslint test/blockjack/*.ts",
+    "mint-sepolia": "hardhat mint --amount 42 --network sepolia",
+    "postinstall": "DOTENV_CONFIG_PATH=./.env.example pnpm typechain",
+    "prettier:check": "prettier --check **/*.{js,json,md,sol,ts,yml}",
+    "prettier:write": "prettier --write **/*.{js,json,md,sol,ts,yml}",
+    "test": "hardhat test --network hardhat",
+    "typechain": "cross-env TS_NODE_TRANSPILE_ONLY=true hardhat typechain"
+  },
+  "version": "1.0.0"
 }

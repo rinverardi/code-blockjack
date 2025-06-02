@@ -1,23 +1,14 @@
 {
-  "name": "fhevmjs-react-template",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
-  "scripts": {
-    "dev": "node scripts/dev.js",
-    "dev-mocked": "MOCKED=true node scripts/dev.js",
-    "build": "tsc && vite build",
-    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview",
-    "prettier": "prettier --write \"**/*.{js,json,md,sol,ts,yml}\"",
-    "prettier:check": "prettier --check \"**/*.{js,json,md,sol,ts,yml}\""
-  },
   "dependencies": {
     "ethers": "^6.6.4",
     "idb": "^8.0.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "web3-validator": "^2.0.6"
+  },
+  "description": "Blockjack Frontend",
+  "engines": {
+    "node": "^20.9.0"
   },
   "devDependencies": {
     "@types/react": "^18.3.1",
@@ -35,7 +26,17 @@
     "vite": "^5.4.11",
     "vite-plugin-node-polyfills": "^0.22.0"
   },
-  "engines": {
-    "node": "^20.9.0"
-  }
+  "name": "blockjack-frontend",
+  "private": true,
+  "scripts": {
+    "build": "tsc && vite build",
+    "dev": "node scripts/dev.js",
+    "dev-mocked": "MOCKED=true node scripts/dev.js",
+    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview",
+    "prettier": "prettier --write \"**/*.{js,json,md,sol,ts,yml}\"",
+    "prettier:check": "prettier --check \"**/*.{js,json,md,sol,ts,yml}\""
+  },
+  "type": "module",
+  "version": "1.0.0"
 }
