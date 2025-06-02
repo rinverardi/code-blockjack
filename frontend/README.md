@@ -1,33 +1,41 @@
-# fhevmjs-react-template
+# Blockjack Frontend
 
-This is a simple template to show how to use fhevmjs with Vite + React.
+## Developer Setup
 
-## Getting started
+	$ cp .env.example .env
+	$ npm install
 
-```bash
-npm install
-```
+## Developer Tools
 
-## Configuration
+This project uses a modern development stack to ensure maintainability and reliability:
 
-Copy `.env.example` to `.env` and update the gateway URL, ACL address, and KMS address to match the fhEVM you're using.
+- [Ethers](https://ethers.org/)
+- [ESLint](https://eslint.org/)
+- [fhevmjs](https://docs.zama.ai/fhevm/references/fhevmjs)
+- [Prettier](https://prettier.io/)
+- [React](https://react.dev/)
+- [Vite](https://vite.dev/)
 
-## Development
+## Usage
 
-```bash
-npm run dev
-```
+Build the code
 
-The server listens on [http://localhost:4173/](http://localhost:4173/)
+	$ npm run build
 
-Note: HMR is currently broken because Vite does not handle WASM correctly. A workaround has been implemented as a script: running `npm run dev` will execute a build watch alongside Vite preview. If you have a solution for enabling the Vite dev server with HMR, feel free to open a pull request! :)
+Lint the code:
 
-## Build
+	$ npm run lint
 
-```bash
-npm run build
-```
+Run against Hardhat:
 
-## Documentation
+	$ npm run dev-mocked
 
-For more information about fhevmjs, you can [read the documentation](https://docs.zama.ai/fhevm).
+Run against Sepolia:
+
+	$ npm run dev
+
+Point your browser to [http://localhost:4173/](http://localhost:4173/).
+
+## Troubleshooting
+
+Sometimes, after restarting your local Hardhat node, the frontend may get stuck or show errors due to MetaMask being out of sync. To fix this, open the MetaMask extension, switch to the Hardhat network, go to your account settings, and clear the account activity to reset the nonce and transaction history.
