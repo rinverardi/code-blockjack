@@ -1,7 +1,6 @@
 /* eslint-env node */
 
 module.exports = {
-  root: true,
   env: { browser: true, es2020: true },
   extends: [
     'eslint:recommended',
@@ -9,22 +8,23 @@ module.exports = {
     'plugin:@typescript-eslint/recommended-requiring-type-checking',
     'plugin:react-hooks/recommended',
   ],
+  ignorePatterns: ['.eslintrc.cjs'],
   parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaVersion: 'latest',
-    sourceType: 'module',
     project: true,
+    sourceType: 'module',
     tsconfigRootDir: __dirname,
   },
   plugins: ['react-refresh'],
+  root: true,
   rules: {
-    'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
     '@typescript-eslint/no-unsafe-call': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
     '@typescript-eslint/no-non-null-assertion': 'off',
     '@typescript-eslint/no-unsafe-assignment': 'off',
     '@typescript-eslint/no-unsafe-member-access': 'off',
     '@typescript-eslint/no-misused-promises': 'off',
+    'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
   },
-  ignorePatterns: ['.eslintrc.cjs'],
 };

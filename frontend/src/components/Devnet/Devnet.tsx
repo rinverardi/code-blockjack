@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { getInstance } from '../../fhevmjs';
-import './Devnet.css';
 import { Eip1193Provider, Provider, ZeroAddress } from 'ethers';
 import { ethers } from 'ethers';
 
@@ -187,17 +186,17 @@ export const Devnet = ({
   return (
     <div>
       <dl>
-        <dt className="Devnet__title">My encrypted balance is:</dt>
-        <dd className="Devnet__dd">{handleBalance.toString()}</dd>
+        <dt>My encrypted balance is:</dt>
+        <dd>{handleBalance.toString()}</dd>
 
         <button onClick={() => decrypt()}>
           Reencrypt and decrypt my balance
         </button>
-        <dd className="Devnet__dd">
+        <dd>
           My decrypted private balance is: {decryptedBalance.toString()}
         </dd>
 
-        <dd className="Devnet__dd">Chose an amount to transfer:</dd>
+        <dd>Chose an amount to transfer:</dd>
 
         <div>
           <input
@@ -217,14 +216,14 @@ export const Devnet = ({
         <button onClick={() => encrypt(BigInt(chosenValue))}>
           Encrypt {chosenValue}
         </button>
-        <dt className="Devnet__title">
+        <dt>
           This is an encryption of {chosenValue}:
         </dt>
-        <dd className="Devnet__dd">
-          <pre className="Devnet__pre">
+        <dd>
+          <pre>
             Handle: {handles.length ? toHexString(handles[0]) : ''}
           </pre>
-          <pre className="Devnet__pre">
+          <pre>
             Input Proof: {encryption ? toHexString(encryption) : ''}
           </pre>
         </dd>
@@ -263,7 +262,7 @@ export const Devnet = ({
           </button>
         </div>
         <div>
-          <dd className="Devnet__dd">
+          <dd>
             The decrypted secret value is: {decryptedSecret}{' '}
             <button
               onClick={refreshSecret}

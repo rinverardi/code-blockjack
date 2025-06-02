@@ -15,7 +15,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@deployments': path.resolve(__dirname, '../hardhat/deployments'),
+      '@deployments': path.resolve(__dirname, '../backend/deployments'),
     },
   },
   server: {

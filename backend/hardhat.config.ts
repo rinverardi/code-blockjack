@@ -75,7 +75,7 @@ task("test", async (_taskArgs, hre, runSuper) => {
 
 task("node", async (_taskArgs, hre, runSuper) => {
   await setCodeMocked(hre);
-  const server = spawn("ts-node", ["--transpile-only", "mockedServices/server.ts"], {
+  const server = spawn("ts-node", ["--transpile-only", "mocks/server.ts"], {
     stdio: "inherit",
   });
 

@@ -1,7 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { BrowserProvider, Provider } from 'ethers';
-
-import './Connect.css';
 import { Eip1193Provider } from 'ethers';
 import { createFhevmInstance } from '../../fhevmjs';
 import { JsonRpcProvider } from 'ethers';
@@ -150,10 +148,10 @@ export const Connect: React.FC<{
   }
 
   const connectInfos = (
-    <div className="Connect__info">
+    <div>
       {!connected && <button onClick={connect}>Connect your wallet</button>}
       {connected && (
-        <div className="Connect__account">Connected with {account}</div>
+        <div>Connected with {account}</div>
       )}
     </div>
   );
@@ -161,7 +159,7 @@ export const Connect: React.FC<{
   return (
     <>
       {connectInfos}
-      <div className="Connect__child">{child}</div>
+      <div>{child}</div>
     </>
   );
 };
