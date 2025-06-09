@@ -1,7 +1,8 @@
 import { Connect } from './Connect';
-import { Devnet } from './Devnet';
 import { useEffect, useState } from 'react';
 import { init } from '../fhevmjs';
+
+import HomomorphicEncryptionForm from "./demo/HomomorphicEncryptionForm";
 
 function App() {
   const [isInitialized, setInitialized] = useState(false);
@@ -12,19 +13,12 @@ function App() {
       .catch(() => setInitialized(false));
   }, []);
 
-  if (!isInitialized) return null;
+  if (!isInitialized) return <p>Not initialized</p>;
 
   return (
     <>
-      <h1>Confidential ERC20 dApp</h1>
       <Connect>
-        {(account, provider, readOnlyProvider) => (
-          <Devnet
-            account={account}
-            provider={provider}
-            readOnlyProvider={readOnlyProvider}
-          />
-        )}
+        {(_, provider) => <HomomorphicEncryptionForm provider={provider} />}
       </Connect>
     </>
   );

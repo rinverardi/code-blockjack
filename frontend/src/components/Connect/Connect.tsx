@@ -150,9 +150,6 @@ export const Connect: React.FC<{
   const connectInfos = (
     <div>
       {!connected && <button onClick={connect}>Connect your wallet</button>}
-      {connected && (
-        <div>Connected with {account}</div>
-      )}
     </div>
   );
 
