@@ -12,9 +12,6 @@ describe("HomomorphicEncryption", function () {
   let alice: Signer;
   let aliceAddress: string;
 
-  let bob: Signer;
-  let bobAddress: string;
-
   let contract: HomomorphicEncryption;
   let contractAddress: string;
 
@@ -25,9 +22,6 @@ describe("HomomorphicEncryption", function () {
 
     alice = signers[0];
     aliceAddress = await alice.getAddress();
-
-    bob = signers[1];
-    bobAddress = await bob.getAddress();
 
     await initGateway();
 

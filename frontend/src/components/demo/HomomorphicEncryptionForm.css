@@ -15,6 +15,10 @@ button, input {
   color: white;
 }
 
+input {
+  width: 80px;
+}
+
 span {
   border-radius: 4px;
   padding: 6px 8px;
