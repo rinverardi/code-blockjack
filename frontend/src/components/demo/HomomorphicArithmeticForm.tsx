@@ -1,0 +1,196 @@
+import { BrowserProvider, Contract, Signer } from "ethers";
+import { useEffect, useState } from "react";
+
+import type { HomomorphicArithmetic } from "../../../../backend/types/contracts/demo/HomomorphicArithmetic";
+import { getInstance } from "../../fhevmjs";
+import "./HomomorphicArithmeticForm.css";
+
+export type HomomorphicArithmeticFormProps = {
+  provider: BrowserProvider;
+};
+
+export const HomomorphicArithmeticForm = ({ provider }: HomomorphicArithmeticFormProps) => {
+  const [addParam0, setAddParam0] = useState(42n);
+  const [addParam1, setAddParam1] = useState(43n);
+  const [addResult, setAddResult] = useState<bigint | null>(null);
+  const [busy, setBusy] = useState<boolean>(false);
+  const [contract, setContract] = useState<(Contract & HomomorphicArithmetic) | null>(null);
+  const [multiplyParam0, setMultiplyParam0] = useState(6n);
+  const [multiplyParam1, setMultiplyParam1] = useState(7n);
+  const [multiplyResult, setMultiplyResult] = useState<bigint | null>(null);
+  const [randomResult, setRandomResult] = useState<bigint | null>(null);
+  const [signer, setSigner] = useState<Signer | null>(null);
+
+  useEffect(() => {
+    async function init() {
+      const signer = await provider.getSigner();
+
+      setSigner(signer);
+
+      const deployment = await import(
+        import.meta.env.MOCKED
+          ? "@deployments/localhost/HomomorphicArithmetic.json"
+          : "@deployments/sepolia/HomomorphicArithmetic.json"
+      );
+
+      const contract = new Contract(deployment.address, deployment.abi, signer) as Contract & HomomorphicArithmetic;
+
+      setContract(contract);
+    }
+
+    init();
+  }, []);
+
+  const instance = getInstance();
+
+  async function getResult() {
+    const { publicKey, privateKey } = instance.generateKeypair();
+
+    const signatureData = instance.createEIP712(publicKey, await contract!.getAddress());
+
+    const signature = await signer!.signTypedData(
+      signatureData.domain,
+      { Reencrypt: signatureData.types.Reencrypt },
+      signatureData.message,
+    );
+
+    return await instance.reencrypt(
+      await contract!.getHandle(),
+      privateKey,
+      publicKey,
+      signature.replace("0x", ""),
+      await contract!.getAddress(),
+      await signer!.getAddress(),
+    );
+  }
+
+  function onChangeAddParam0(event: React.ChangeEvent<HTMLInputElement>) {
+    try {
+      setAddParam0(BigInt(event.target.value));
+    } catch (error) {
+      alert(error);
+    }
+  }
+
+  function onChangeAddParam1(event: React.ChangeEvent<HTMLInputElement>) {
+    try {
+      setAddParam1(BigInt(event.target.value));
+    } catch (error) {
+      alert(error);
+    }
+  }
+
+  function onChangeMultiplyParam0(event: React.ChangeEvent<HTMLInputElement>) {
+    try {
+      setMultiplyParam0(BigInt(event.target.value));
+    } catch (error) {
+      alert(error);
+    }
+  }
+
+  function onChangeMultiplyParam1(event: React.ChangeEvent<HTMLInputElement>) {
+    try {
+      setMultiplyParam1(BigInt(event.target.value));
+    } catch (error) {
+      alert(error);
+    }
+  }
+
+  async function onClickAddValues() {
+    setBusy(true);
+
+    try {
+      const input = await instance
+        .createEncryptedInput(await contract!.getAddress(), await signer!.getAddress())
+        .add8(addParam0)
+        .add8(addParam1)
+        .encrypt();
+
+      const addValues = await contract!.addValues(input.handles[0], input.handles[1], input.inputProof);
+      await addValues.wait();
+
+      setAddResult(await getResult());
+    } catch (error) {
+      alert(error);
+    }
+
+    setBusy(false);
+  }
+
+  async function onClickMultiplyValues() {
+    setBusy(true);
+
+    try {
+      const input = await instance
+        .createEncryptedInput(await contract!.getAddress(), await signer!.getAddress())
+        .add8(multiplyParam0)
+        .add8(multiplyParam1)
+        .encrypt();
+
+      const addValues = await contract!.multiplyValues(input.handles[0], input.handles[1], input.inputProof);
+      await addValues.wait();
+
+      setMultiplyResult(await getResult());
+    } catch (error) {
+      alert(error);
+    }
+
+    setBusy(false);
+  }
+
+  async function onClickRandomValue() {
+    setBusy(true);
+
+    try {
+      const randomValue = await contract!.randomValue();
+      await randomValue.wait();
+
+      setRandomResult(await getResult());
+    } catch (error) {
+      alert(error);
+    }
+
+    setBusy(false);
+  }
+
+  return (
+    <>
+      <h1>Homomorphic Arithmetic</h1>
+      <p>
+        function
+        <button disabled={busy} onClick={onClickAddValues}>
+          addValues
+        </button>
+        {"("}
+        <input onChange={onChangeAddParam0} value={addParam0.toString()} />
+        ,
+        <input onChange={onChangeAddParam1} value={addParam1.toString()} />
+        {")"} &rarr;
+        <input readOnly value={addResult?.toString()} />
+      </p>
+      <p>
+        function
+        <button disabled={busy} onClick={onClickMultiplyValues}>
+          multiplyValues
+        </button>
+        {"("}
+        <input onChange={onChangeMultiplyParam0} value={multiplyParam0.toString()} />
+        ,
+        <input onChange={onChangeMultiplyParam1} value={multiplyParam1.toString()} />
+        {")"} &rarr;
+        <input readOnly value={multiplyResult?.toString()} />
+      </p>
+      <p>
+        function
+        <button disabled={busy} onClick={onClickRandomValue}>
+          randomValue
+        </button>
+        {"( )"} &rarr;
+        <input readOnly value={randomResult?.toString()} />
+      </p>
+      <span className={busy ? "busy" : "idle"}>{busy ? "Busy" : "Idle"}</span>
+    </>
+  );
+};
+
+export default HomomorphicArithmeticForm;

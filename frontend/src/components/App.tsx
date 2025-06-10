@@ -2,7 +2,7 @@ import { Connect } from './Connect';
 import { useEffect, useState } from 'react';
 import { init } from '../fhevmjs';
 
-import HomomorphicEncryptionForm from "./demo/HomomorphicEncryptionForm";
+import HomomorphicArithmeticForm from "./demo/HomomorphicArithmeticForm";
 
 function App() {
   const [isInitialized, setInitialized] = useState(false);
@@ -18,7 +18,7 @@ function App() {
   return (
     <>
       <Connect>
-        {(_, provider) => <HomomorphicEncryptionForm provider={provider} />}
+        {(_, provider) => <HomomorphicArithmeticForm provider={provider} />}
       </Connect>
     </>
   );
