@@ -158,9 +158,7 @@ export const HomomorphicArithmeticForm = ({ provider }: HomomorphicArithmeticFor
       <h1>Homomorphic Arithmetic</h1>
       <p>
         function
-        <button disabled={busy} onClick={onClickAddValues}>
-          addValues
-        </button>
+        <button onClick={onClickAddValues}>addValues</button>
         {"("}
         <input onChange={onChangeAddParam0} value={addParam0.toString()} />
         ,
@@ -170,9 +168,7 @@ export const HomomorphicArithmeticForm = ({ provider }: HomomorphicArithmeticFor
       </p>
       <p>
         function
-        <button disabled={busy} onClick={onClickMultiplyValues}>
-          multiplyValues
-        </button>
+        <button onClick={onClickMultiplyValues}>multiplyValues</button>
         {"("}
         <input onChange={onChangeMultiplyParam0} value={multiplyParam0.toString()} />
         ,
@@ -182,9 +178,7 @@ export const HomomorphicArithmeticForm = ({ provider }: HomomorphicArithmeticFor
       </p>
       <p>
         function
-        <button disabled={busy} onClick={onClickRandomValue}>
-          randomValue
-        </button>
+        <button onClick={onClickRandomValue}>randomValue</button>
         {"( )"} &rarr;
         <input readOnly value={randomResult?.toString()} />
       </p>

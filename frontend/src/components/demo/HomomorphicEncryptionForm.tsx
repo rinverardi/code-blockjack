@@ -177,23 +177,18 @@ export const HomomorphicEncryptionForm = ({ provider }: HomomorphicEncryptionFor
       <h1>Homomorphic Encryption</h1>
       <p>
         function
-        <button disabled={busy} onClick={onClickDecryptValue}>
-          decryptValue
-        </button>
+        <button onClick={onClickDecryptValue}>decryptValue</button>
+        {"( )"}
       </p>
       <p>
         function
-        <button disabled={busy} onClick={onClickGetHandle}>
-          getHandle
-        </button>
+        <button onClick={onClickGetHandle}>getHandle</button>
         {"( )"} &rarr;
         <input readOnly value={showHandle(handle)} />
       </p>
       <p>
         function
-        <button disabled={busy} onClick={onClickGetConfidentialValue}>
-          getConfidentialValue
-        </button>
+        <button onClick={onClickGetConfidentialValue}>getConfidentialValue</button>
         {"("}
         <input readOnly value={showHandle(handle)} />
         {")"} &rarr;
@@ -201,26 +196,20 @@ export const HomomorphicEncryptionForm = ({ provider }: HomomorphicEncryptionFor
       </p>
       <p>
         function
-        <button disabled={busy} onClick={onClickGetTransparentValue}>
-          getTransparentValue
-        </button>
+        <button onClick={onClickGetTransparentValue}>getTransparentValue</button>
         {"( )"} &rarr;
         <input readOnly value={transparentResult?.toString()} />
       </p>
       <p>
         function
-        <button disabled={busy} onClick={onClickSetConfidentialValue}>
-          setConfidentialValue
-        </button>
+        <button onClick={onClickSetConfidentialValue}>setConfidentialValue</button>
         {"("}
         <input onChange={onChangeConfidentialValue} value={confidentialValue.toString()} />
         {")"}
       </p>
       <p>
         function
-        <button disabled={busy} onClick={onClickSetTransparentValue}>
-          setTransparentValue
-        </button>
+        <button onClick={onClickSetTransparentValue}>setTransparentValue</button>
         {"("}
         <input onChange={onChangeTransparentValue} value={transparentValue.toString()} />
         {")"}
