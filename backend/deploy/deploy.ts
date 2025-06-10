@@ -9,6 +9,10 @@ const deployFunction: DeployFunction = async function (environment: HardhatRunti
 
   console.log(`Blockjack contract deployed at ${blockjack.address}.`);
 
+  const homomorphicArithmetic = await deploy("HomomorphicArithmetic", { from: deployer });
+
+  console.log(`Demo contract for homomorphic arithmetic deployed at ${homomorphicArithmetic.address}.`);
+
   const homomorphicEncryption = await deploy("HomomorphicEncryption", { from: deployer });
 
   console.log(`Demo contract for homomorphic encryption deployed at ${homomorphicEncryption.address}.`);
