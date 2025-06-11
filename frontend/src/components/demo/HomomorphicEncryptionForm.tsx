@@ -5,11 +5,7 @@ import type { HomomorphicEncryption } from "../../../../backend/types/contracts/
 import { getInstance } from "../../fhevmjs";
 import "./HomomorphicEncryptionForm.css";
 
-export type HomomorphicEncryptionFormProps = {
-  provider: BrowserProvider;
-};
-
-export const HomomorphicEncryptionForm = ({ provider }: HomomorphicEncryptionFormProps) => {
+export const HomomorphicEncryptionForm = () => {
   const [busy, setBusy] = useState<boolean>(false);
   const [contract, setContract] = useState<(Contract & HomomorphicEncryption) | null>(null);
   const [confidentialResult, setConfidentialResult] = useState<bigint | null>(null);
@@ -18,6 +14,9 @@ export const HomomorphicEncryptionForm = ({ provider }: HomomorphicEncryptionFor
   const [signer, setSigner] = useState<Signer | null>(null);
   const [transparentResult, setTransparentResult] = useState<bigint | null>(null);
   const [transparentValue, setTransparentValue] = useState(42n);
+
+  const instance = getInstance();
+  const provider = new BrowserProvider(window.ethereum);
 
   useEffect(() => {
     async function init() {
@@ -38,8 +37,6 @@ export const HomomorphicEncryptionForm = ({ provider }: HomomorphicEncryptionFor
 
     init();
   }, []);
-
-  const instance = getInstance();
 
   function onChangeConfidentialValue(event: React.ChangeEvent<HTMLInputElement>) {
     try {

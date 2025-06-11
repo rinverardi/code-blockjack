@@ -5,11 +5,7 @@ import type { HomomorphicArithmetic } from "../../../../backend/types/contracts/
 import { getInstance } from "../../fhevmjs";
 import "./HomomorphicArithmeticForm.css";
 
-export type HomomorphicArithmeticFormProps = {
-  provider: BrowserProvider;
-};
-
-export const HomomorphicArithmeticForm = ({ provider }: HomomorphicArithmeticFormProps) => {
+export const HomomorphicArithmeticForm = () => {
   const [addParam0, setAddParam0] = useState(42n);
   const [addParam1, setAddParam1] = useState(43n);
   const [addResult, setAddResult] = useState<bigint | null>(null);
@@ -20,6 +16,9 @@ export const HomomorphicArithmeticForm = ({ provider }: HomomorphicArithmeticFor
   const [multiplyResult, setMultiplyResult] = useState<bigint | null>(null);
   const [randomResult, setRandomResult] = useState<bigint | null>(null);
   const [signer, setSigner] = useState<Signer | null>(null);
+
+  const instance = getInstance();
+  const provider = new BrowserProvider(window.ethereum);
 
   useEffect(() => {
     async function init() {
@@ -40,8 +39,6 @@ export const HomomorphicArithmeticForm = ({ provider }: HomomorphicArithmeticFor
 
     init();
   }, []);
-
-  const instance = getInstance();
 
   async function getResult() {
     const { publicKey, privateKey } = instance.generateKeypair();
