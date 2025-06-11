@@ -1,0 +1,85 @@
+* {
+  font-family: "Oxanium", sans-serif;
+  font-size: 16px;
+  outline: none;
+}
+
+body {
+  background: white;
+  color: black;
+  margin: 0;
+  padding-bottom: 40px;
+}
+
+button {
+  background: black;
+  border: 2px solid black;
+  border-radius: 4px;
+  color: white;
+  margin: 4px;
+  padding: 6px 8px;
+}
+
+button:active {
+  background: white;
+  color: black;
+}
+
+.content {
+  margin: auto;
+  max-width: 80%;
+}
+
+h1 {
+  font-size: 32px;
+  margin-top: 40px;
+}
+
+.indicator {
+  border-radius: 4px;
+  padding: 10px 12px;
+}
+
+.indicatorBusy {
+  background-color: red;
+  color: white;
+}
+
+.indicatorIdle {
+  background-color: green;
+  color: white;
+}
+
+input {
+  border: 2px solid black;
+  border-radius: 4px;
+  margin: 4px;
+  padding: 6px 8px;
+  width: 80px;
+}
+
+.status {
+  align-items: center;
+  background: black;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  padding: 12px;
+}
+
+.status button {
+  background: green;
+  border: none;
+  color: white;
+  padding: 8px 10px;
+}
+
+.status button:active {
+  background: white;
+  color: black;
+}
+
+@font-face {
+  font-family: "Oxanium";
+  src: url("/fonts/oxanium.woff2") format("woff2");
+}

@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 
 import type { HomomorphicArithmetic } from "../../../../backend/types/contracts/demo/HomomorphicArithmetic";
 import { getInstance } from "../../fhevmjs";
-import "./HomomorphicArithmeticForm.css";
 
 export const HomomorphicArithmeticForm = () => {
   const [addParam0, setAddParam0] = useState(42n);
@@ -179,7 +178,7 @@ export const HomomorphicArithmeticForm = () => {
         {"( )"} &rarr;
         <input readOnly value={randomResult?.toString()} />
       </p>
-      <span className={busy ? "busy" : "idle"}>{busy ? "Busy" : "Idle"}</span>
+      <span className={"indicator indicator" + (busy ? "Busy" : "Idle")}>{busy ? "Busy" : "Idle"}</span>
     </>
   );
 };

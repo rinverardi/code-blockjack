@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 
 import type { HomomorphicEncryption } from "../../../../backend/types/contracts/demo/HomomorphicEncryption";
 import { getInstance } from "../../fhevmjs";
-import "./HomomorphicEncryptionForm.css";
 
 export const HomomorphicEncryptionForm = () => {
   const [busy, setBusy] = useState<boolean>(false);
@@ -211,7 +210,7 @@ export const HomomorphicEncryptionForm = () => {
         <input onChange={onChangeTransparentValue} value={transparentValue.toString()} />
         {")"}
       </p>
-      <span className={busy ? "busy" : "idle"}>{busy ? "Busy" : "Idle"}</span>
+      <span className={"indicator indicator" + (busy ? "Busy" : "Idle")}>{busy ? "Busy" : "Idle"}</span>
     </>
   );
 };
