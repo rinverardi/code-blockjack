@@ -1,27 +1,37 @@
-import { Connect } from './Connect';
-import { useEffect, useState } from 'react';
-import { init } from '../fhevmjs';
+import { useEffect, useState } from "react";
 
+import { createFhevmInstance, init } from "../fhevmjs";
+import "./App.css";
+import Connection from "./Connection";
 import HomomorphicArithmeticForm from "./demo/HomomorphicArithmeticForm";
+import HomomorphicEncryptionForm from "./demo/HomomorphicEncryptionForm";
 
 function App() {
-  const [isInitialized, setInitialized] = useState(false);
+  const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
-    init()
-      .then(() => setInitialized(true))
-      .catch(() => setInitialized(false));
+    initialize();
   }, []);
 
-  if (!isInitialized) return <p>Not initialized</p>;
+  async function initialize() {
+    await init();
+    await createFhevmInstance();
 
-  return (
-    <>
-      <Connect>
-        {(_, provider) => <HomomorphicArithmeticForm provider={provider} />}
-      </Connect>
-    </>
-  );
+    setInitialized(true);
+  }
+
+  if (initialized) {
+    return (
+      <>
+        <Connection>
+          <div className="content">
+            <HomomorphicArithmeticForm />
+            <HomomorphicEncryptionForm />
+          </div>
+        </Connection>
+      </>
+    );
+  }
 }
 
 export default App;
