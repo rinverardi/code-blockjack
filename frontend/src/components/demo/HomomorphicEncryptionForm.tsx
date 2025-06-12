@@ -3,13 +3,8 @@ import { useEffect, useState } from "react";
 
 import type { HomomorphicEncryption } from "../../../../backend/types/contracts/demo/HomomorphicEncryption";
 import { getInstance } from "../../fhevmjs";
-import "./HomomorphicEncryptionForm.css";
 
-export type HomomorphicEncryptionFormProps = {
-  provider: BrowserProvider;
-};
-
-export const HomomorphicEncryptionForm = ({ provider }: HomomorphicEncryptionFormProps) => {
+export const HomomorphicEncryptionForm = () => {
   const [busy, setBusy] = useState<boolean>(false);
   const [contract, setContract] = useState<(Contract & HomomorphicEncryption) | null>(null);
   const [confidentialResult, setConfidentialResult] = useState<bigint | null>(null);
@@ -18,6 +13,9 @@ export const HomomorphicEncryptionForm = ({ provider }: HomomorphicEncryptionFor
   const [signer, setSigner] = useState<Signer | null>(null);
   const [transparentResult, setTransparentResult] = useState<bigint | null>(null);
   const [transparentValue, setTransparentValue] = useState(42n);
+
+  const instance = getInstance();
+  const provider = new BrowserProvider(window.ethereum);
 
   useEffect(() => {
     async function init() {
@@ -38,8 +36,6 @@ export const HomomorphicEncryptionForm = ({ provider }: HomomorphicEncryptionFor
 
     init();
   }, []);
-
-  const instance = getInstance();
 
   function onChangeConfidentialValue(event: React.ChangeEvent<HTMLInputElement>) {
     try {
@@ -177,23 +173,18 @@ export const HomomorphicEncryptionForm = ({ provider }: HomomorphicEncryptionFor
       <h1>Homomorphic Encryption</h1>
       <p>
         function
-        <button disabled={busy} onClick={onClickDecryptValue}>
-          decryptValue
-        </button>
+        <button onClick={onClickDecryptValue}>decryptValue</button>
+        {"( )"}
       </p>
       <p>
         function
-        <button disabled={busy} onClick={onClickGetHandle}>
-          getHandle
-        </button>
+        <button onClick={onClickGetHandle}>getHandle</button>
         {"( )"} &rarr;
         <input readOnly value={showHandle(handle)} />
       </p>
       <p>
         function
-        <button disabled={busy} onClick={onClickGetConfidentialValue}>
-          getConfidentialValue
-        </button>
+        <button onClick={onClickGetConfidentialValue}>getConfidentialValue</button>
         {"("}
         <input readOnly value={showHandle(handle)} />
         {")"} &rarr;
@@ -201,31 +192,25 @@ export const HomomorphicEncryptionForm = ({ provider }: HomomorphicEncryptionFor
       </p>
       <p>
         function
-        <button disabled={busy} onClick={onClickGetTransparentValue}>
-          getTransparentValue
-        </button>
+        <button onClick={onClickGetTransparentValue}>getTransparentValue</button>
         {"( )"} &rarr;
         <input readOnly value={transparentResult?.toString()} />
       </p>
       <p>
         function
-        <button disabled={busy} onClick={onClickSetConfidentialValue}>
-          setConfidentialValue
-        </button>
+        <button onClick={onClickSetConfidentialValue}>setConfidentialValue</button>
         {"("}
         <input onChange={onChangeConfidentialValue} value={confidentialValue.toString()} />
         {")"}
       </p>
       <p>
         function
-        <button disabled={busy} onClick={onClickSetTransparentValue}>
-          setTransparentValue
-        </button>
+        <button onClick={onClickSetTransparentValue}>setTransparentValue</button>
         {"("}
         <input onChange={onChangeTransparentValue} value={transparentValue.toString()} />
         {")"}
       </p>
-      <span className={busy ? "busy" : "idle"}>{busy ? "Busy" : "Idle"}</span>
+      <span className={"indicator indicator" + (busy ? "Busy" : "Idle")}>{busy ? "Busy" : "Idle"}</span>
     </>
   );
 };

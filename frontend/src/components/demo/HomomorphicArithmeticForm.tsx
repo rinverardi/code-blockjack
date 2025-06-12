@@ -3,13 +3,8 @@ import { useEffect, useState } from "react";
 
 import type { HomomorphicArithmetic } from "../../../../backend/types/contracts/demo/HomomorphicArithmetic";
 import { getInstance } from "../../fhevmjs";
-import "./HomomorphicArithmeticForm.css";
 
-export type HomomorphicArithmeticFormProps = {
-  provider: BrowserProvider;
-};
-
-export const HomomorphicArithmeticForm = ({ provider }: HomomorphicArithmeticFormProps) => {
+export const HomomorphicArithmeticForm = () => {
   const [addParam0, setAddParam0] = useState(42n);
   const [addParam1, setAddParam1] = useState(43n);
   const [addResult, setAddResult] = useState<bigint | null>(null);
@@ -20,6 +15,9 @@ export const HomomorphicArithmeticForm = ({ provider }: HomomorphicArithmeticFor
   const [multiplyResult, setMultiplyResult] = useState<bigint | null>(null);
   const [randomResult, setRandomResult] = useState<bigint | null>(null);
   const [signer, setSigner] = useState<Signer | null>(null);
+
+  const instance = getInstance();
+  const provider = new BrowserProvider(window.ethereum);
 
   useEffect(() => {
     async function init() {
@@ -40,8 +38,6 @@ export const HomomorphicArithmeticForm = ({ provider }: HomomorphicArithmeticFor
 
     init();
   }, []);
-
-  const instance = getInstance();
 
   async function getResult() {
     const { publicKey, privateKey } = instance.generateKeypair();
@@ -158,9 +154,7 @@ export const HomomorphicArithmeticForm = ({ provider }: HomomorphicArithmeticFor
       <h1>Homomorphic Arithmetic</h1>
       <p>
         function
-        <button disabled={busy} onClick={onClickAddValues}>
-          addValues
-        </button>
+        <button onClick={onClickAddValues}>addValues</button>
         {"("}
         <input onChange={onChangeAddParam0} value={addParam0.toString()} />
         ,
@@ -170,9 +164,7 @@ export const HomomorphicArithmeticForm = ({ provider }: HomomorphicArithmeticFor
       </p>
       <p>
         function
-        <button disabled={busy} onClick={onClickMultiplyValues}>
-          multiplyValues
-        </button>
+        <button onClick={onClickMultiplyValues}>multiplyValues</button>
         {"("}
         <input onChange={onChangeMultiplyParam0} value={multiplyParam0.toString()} />
         ,
@@ -182,13 +174,11 @@ export const HomomorphicArithmeticForm = ({ provider }: HomomorphicArithmeticFor
       </p>
       <p>
         function
-        <button disabled={busy} onClick={onClickRandomValue}>
-          randomValue
-        </button>
+        <button onClick={onClickRandomValue}>randomValue</button>
         {"( )"} &rarr;
         <input readOnly value={randomResult?.toString()} />
       </p>
-      <span className={busy ? "busy" : "idle"}>{busy ? "Busy" : "Idle"}</span>
+      <span className={"indicator indicator" + (busy ? "Busy" : "Idle")}>{busy ? "Busy" : "Idle"}</span>
     </>
   );
 };
