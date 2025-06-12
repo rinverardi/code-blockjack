@@ -1,7 +1,7 @@
+import type { HomomorphicArithmetic } from "@backend-types/contracts/demo/HomomorphicArithmetic";
 import { BrowserProvider, Contract, Signer } from "ethers";
 import { useEffect, useState } from "react";
 
-import type { HomomorphicArithmetic } from "../../../../backend/types/contracts/demo/HomomorphicArithmetic";
 import { getInstance } from "../../fhevmjs";
 
 export const HomomorphicArithmeticForm = () => {
@@ -27,8 +27,8 @@ export const HomomorphicArithmeticForm = () => {
 
       const deployment = await import(
         import.meta.env.MOCKED
-          ? "@deployments/localhost/HomomorphicArithmetic.json"
-          : "@deployments/sepolia/HomomorphicArithmetic.json"
+          ? "@backend-deployments/localhost/HomomorphicArithmetic.json"
+          : "@backend-deployments/sepolia/HomomorphicArithmetic.json"
       );
 
       const contract = new Contract(deployment.address, deployment.abi, signer) as Contract & HomomorphicArithmetic;

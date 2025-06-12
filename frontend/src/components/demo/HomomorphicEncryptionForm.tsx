@@ -1,7 +1,7 @@
+import type { HomomorphicEncryption } from "@backend-types/contracts/demo/HomomorphicEncryption";
 import { BrowserProvider, Contract, Signer } from "ethers";
 import { useEffect, useState } from "react";
 
-import type { HomomorphicEncryption } from "../../../../backend/types/contracts/demo/HomomorphicEncryption";
 import { getInstance } from "../../fhevmjs";
 
 export const HomomorphicEncryptionForm = () => {
@@ -25,8 +25,8 @@ export const HomomorphicEncryptionForm = () => {
 
       const deployment = await import(
         import.meta.env.MOCKED
-          ? "@deployments/localhost/HomomorphicEncryption.json"
-          : "@deployments/sepolia/HomomorphicEncryption.json"
+          ? "@backend-deployments/localhost/HomomorphicEncryption.json"
+          : "@backend-deployments/sepolia/HomomorphicEncryption.json"
       );
 
       const contract = new Contract(deployment.address, deployment.abi, signer) as Contract & HomomorphicEncryption;
