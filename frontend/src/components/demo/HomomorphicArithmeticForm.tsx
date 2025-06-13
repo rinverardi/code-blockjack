@@ -16,7 +16,6 @@ export const HomomorphicArithmeticForm = () => {
   const [randomResult, setRandomResult] = useState<bigint | null>(null);
   const [signer, setSigner] = useState<Signer | null>(null);
 
-  const instance = getInstance();
   const provider = new BrowserProvider(window.ethereum);
 
   useEffect(() => {
@@ -40,9 +39,9 @@ export const HomomorphicArithmeticForm = () => {
   }, []);
 
   async function getResult() {
-    const { publicKey, privateKey } = instance.generateKeypair();
+    const { publicKey, privateKey } = getInstance().generateKeypair();
 
-    const signatureData = instance.createEIP712(publicKey, await contract!.getAddress());
+    const signatureData = getInstance().createEIP712(publicKey, await contract!.getAddress());
 
     const signature = await signer!.signTypedData(
       signatureData.domain,
@@ -50,7 +49,7 @@ export const HomomorphicArithmeticForm = () => {
       signatureData.message,
     );
 
-    return await instance.reencrypt(
+    return await getInstance().reencrypt(
       await contract!.getHandle(),
       privateKey,
       publicKey,
@@ -96,7 +95,7 @@ export const HomomorphicArithmeticForm = () => {
     setBusy(true);
 
     try {
-      const input = await instance
+      const input = await getInstance()
         .createEncryptedInput(await contract!.getAddress(), await signer!.getAddress())
         .add8(addParam0)
         .add8(addParam1)
@@ -117,7 +116,7 @@ export const HomomorphicArithmeticForm = () => {
     setBusy(true);
 
     try {
-      const input = await instance
+      const input = await getInstance()
         .createEncryptedInput(await contract!.getAddress(), await signer!.getAddress())
         .add8(multiplyParam0)
         .add8(multiplyParam1)
@@ -137,14 +136,14 @@ export const HomomorphicArithmeticForm = () => {
   async function onClickRandomValue() {
     setBusy(true);
 
-    try {
-      const randomValue = await contract!.randomValue();
-      await randomValue.wait();
+    // try {
+    const randomValue = await contract!.randomValue();
+    await randomValue.wait();
 
-      setRandomResult(await getResult());
-    } catch (error) {
-      alert(error);
-    }
+    setRandomResult(await getResult());
+    // } catch (error) {
+    //   alert(error);
+    // }
 
     setBusy(false);
   }

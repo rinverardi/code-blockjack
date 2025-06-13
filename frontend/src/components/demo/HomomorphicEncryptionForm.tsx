@@ -14,7 +14,6 @@ export const HomomorphicEncryptionForm = () => {
   const [transparentResult, setTransparentResult] = useState<bigint | null>(null);
   const [transparentValue, setTransparentValue] = useState(42n);
 
-  const instance = getInstance();
   const provider = new BrowserProvider(window.ethereum);
 
   useEffect(() => {
@@ -84,9 +83,9 @@ export const HomomorphicEncryptionForm = () => {
     setBusy(true);
 
     try {
-      const { publicKey, privateKey } = instance.generateKeypair();
+      const { publicKey, privateKey } = getInstance().generateKeypair();
 
-      const eip712 = instance.createEIP712(publicKey, await contract!.getAddress());
+      const eip712 = getInstance().createEIP712(publicKey, await contract!.getAddress());
 
       const signature = await signer!.signTypedData(
         eip712.domain,
@@ -94,7 +93,7 @@ export const HomomorphicEncryptionForm = () => {
         eip712.message,
       );
 
-      const result = await instance.reencrypt(
+      const result = await getInstance().reencrypt(
         handle!.valueOf(),
         privateKey,
         publicKey,
@@ -129,7 +128,7 @@ export const HomomorphicEncryptionForm = () => {
     setBusy(true);
 
     try {
-      const input = await instance
+      const input = await getInstance()
         .createEncryptedInput(await contract!.getAddress(), await signer!.getAddress())
         .add8(confidentialValue)
         .encrypt();
