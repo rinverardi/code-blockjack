@@ -15,71 +15,88 @@ enum State {
 }
 
 describe("Blockjack", function () {
-  let alice: Signer;
   let bob: Signer;
+  let carol: Signer;
 
   let contract: TestableBlockjack;
 
   before(async function () {
-    const signers = await ethers.getSigners();
-
-    alice = signers[0];
-    bob = signers[1];
-
     const factory = await ethers.getContractFactory("TestableBlockjack");
 
     contract = await factory.deploy();
 
     await contract.waitForDeployment();
 
-    contract = contract.connect(bob);
+    const signers = await ethers.getSigners();
+
+    bob = signers[1];
+    carol = signers[2];
   });
 
   beforeEach(async function () {
-    const deleteGame = await contract.deleteGame();
-
-    await deleteGame.wait();
+    for (const player of [bob, carol]) {
+      const deleteGame = await contract.connect(player).deleteGame();
+      await deleteGame.wait();
+    }
   });
 
   it("create game", async function () {
-    const plantDeck = await contract.plantDeck([0, 0, 0, 0, 9, 8, 7, 6]);
+    const bobsContract = contract.connect(bob);
+
+    const plantDeck = await bobsContract.plantDeck([0, 0, 0, 0, 9, 8, 7, 6]);
     await plantDeck.wait();
 
-    const createGame = await contract.createGame();
+    const createGame = await bobsContract.createGame();
     await createGame.wait();
 
-    await expect(createGame).to.emit(contract, "CardsChangedForPlayer").withArgs(bob, [6, 7]);
-    await expect(createGame).to.emit(contract, "CardsChangedForDealer").withArgs(bob, [8, 9]);
-    await expect(createGame).to.emit(contract, "StateChanged").withArgs(bob, State.Waiting);
+    await expect(createGame).to.emit(bobsContract, "CardsChangedForPlayer").withArgs(bob, [6, 7]);
+    await expect(createGame).to.emit(bobsContract, "CardsChangedForDealer").withArgs(bob, [8, 9]);
+    await expect(createGame).to.emit(bobsContract, "StateChanged").withArgs(bob, State.Waiting);
 
-    const game = await contract.getGame();
+    const game = await bobsContract.getGame();
 
     expect(game.cardsForPlayer).to.deep.eq([6, 7]);
     expect(game.cardsForDealer).to.deep.eq([8, 9]);
     expect(game.state).to.eq(State.Waiting);
   });
 
-  it("create game again", async function () {
-    const createGame = await contract.createGame();
+  it("create game again (different player)", async function () {
+    const bobsContract = contract.connect(bob);
+
+    const createGameAsBob = await bobsContract.createGame();
+    await createGameAsBob.wait();
+
+    const carolsContract = contract.connect(carol);
+
+    const createGameAsCarol = await carolsContract.createGame();
+    await createGameAsCarol.wait();
+  });
+
+  it("create game again (same player)", async function () {
+    const bobsContract = contract.connect(bob);
+
+    const createGame = await bobsContract.createGame();
     await createGame.wait();
 
-    await expect(contract.createGame()).to.be.revertedWith("Illegal state");
+    await expect(bobsContract.createGame()).to.be.revertedWith("Illegal state");
   });
 
   it("dealer busts", async function () {
-    const plantDeck = await contract.plantDeck([0, 0, 0, 9, 8, 7, 8, 7]);
+    const bobsContract = contract.connect(bob);
+
+    const plantDeck = await bobsContract.plantDeck([0, 0, 0, 9, 8, 7, 8, 7]);
     await plantDeck.wait();
 
-    const createGame = await contract.createGame();
+    const createGame = await bobsContract.createGame();
     await createGame.wait();
 
-    const stand = await contract.stand();
+    const stand = await bobsContract.stand();
     await stand.wait();
 
-    await expect(stand).to.emit(contract, "CardsChangedForDealer").withArgs(bob, [7, 8, 9]);
-    await expect(stand).to.emit(contract, "StateChanged").withArgs(bob, State.PlayerWins);
+    await expect(stand).to.emit(bobsContract, "CardsChangedForDealer").withArgs(bob, [7, 8, 9]);
+    await expect(stand).to.emit(bobsContract, "StateChanged").withArgs(bob, State.PlayerWins);
 
-    const game = await contract.getGame();
+    const game = await bobsContract.getGame();
 
     expect(game.cardsForPlayer).to.deep.eq([7, 8]);
     expect(game.cardsForDealer).to.deep.eq([7, 8, 9]);
@@ -87,18 +104,20 @@ describe("Blockjack", function () {
   });
 
   it("dealer wins", async function () {
-    const plantDeck = await contract.plantDeck([0, 0, 0, 0, Q, J, 9, 8]);
+    const bobsContract = contract.connect(bob);
+
+    const plantDeck = await bobsContract.plantDeck([0, 0, 0, 0, Q, J, 9, 8]);
     await plantDeck.wait();
 
-    const createGame = await contract.createGame();
+    const createGame = await bobsContract.createGame();
     await createGame.wait();
 
-    const stand = await contract.stand();
+    const stand = await bobsContract.stand();
     await stand.wait();
 
-    await expect(stand).to.emit(contract, "StateChanged").withArgs(bob, State.DealerWins);
+    await expect(stand).to.emit(bobsContract, "StateChanged").withArgs(bob, State.DealerWins);
 
-    const game = await contract.getGame();
+    const game = await bobsContract.getGame();
 
     expect(game.cardsForPlayer).to.deep.eq([8, 9]);
     expect(game.cardsForDealer).to.deep.eq([J, Q]);
@@ -106,17 +125,19 @@ describe("Blockjack", function () {
   });
 
   it("dealer wins early (Blockjack)", async function () {
-    const plantDeck = await contract.plantDeck([0, 0, 0, 0, A, K, 7, 6]);
+    const bobsContract = contract.connect(bob);
+
+    const plantDeck = await bobsContract.plantDeck([0, 0, 0, 0, A, K, 7, 6]);
     await plantDeck.wait();
 
-    const createGame = await contract.createGame();
+    const createGame = await bobsContract.createGame();
     await createGame.wait();
 
-    await expect(createGame).to.emit(contract, "CardsChangedForPlayer").withArgs(bob, [6, 7]);
-    await expect(createGame).to.emit(contract, "CardsChangedForDealer").withArgs(bob, [K, A]);
-    await expect(createGame).to.emit(contract, "StateChanged").withArgs(bob, State.DealerWins);
+    await expect(createGame).to.emit(bobsContract, "CardsChangedForPlayer").withArgs(bob, [6, 7]);
+    await expect(createGame).to.emit(bobsContract, "CardsChangedForDealer").withArgs(bob, [K, A]);
+    await expect(createGame).to.emit(bobsContract, "StateChanged").withArgs(bob, State.DealerWins);
 
-    const game = await contract.getGame();
+    const game = await bobsContract.getGame();
 
     expect(game.cardsForPlayer).to.deep.eq([6, 7]);
     expect(game.cardsForDealer).to.deep.eq([K, A]);
@@ -124,19 +145,21 @@ describe("Blockjack", function () {
   });
 
   it("dealer wins late", async function () {
-    const plantDeck = await contract.plantDeck([0, 0, 0, 8, 7, 6, Q, J]);
+    const bobsContract = contract.connect(bob);
+
+    const plantDeck = await bobsContract.plantDeck([0, 0, 0, 8, 7, 6, Q, J]);
     await plantDeck.wait();
 
-    const createGame = await contract.createGame();
+    const createGame = await bobsContract.createGame();
     await createGame.wait();
 
-    const stand = await contract.stand();
+    const stand = await bobsContract.stand();
     await stand.wait();
 
-    await expect(stand).to.emit(contract, "CardsChangedForDealer").withArgs(bob, [6, 7, 8]);
-    await expect(stand).to.emit(contract, "StateChanged").withArgs(bob, State.DealerWins);
+    await expect(stand).to.emit(bobsContract, "CardsChangedForDealer").withArgs(bob, [6, 7, 8]);
+    await expect(stand).to.emit(bobsContract, "StateChanged").withArgs(bob, State.DealerWins);
 
-    const game = await contract.getGame();
+    const game = await bobsContract.getGame();
 
     expect(game.cardsForPlayer).to.deep.eq([J, Q]);
     expect(game.cardsForDealer).to.deep.eq([6, 7, 8]);
@@ -144,18 +167,20 @@ describe("Blockjack", function () {
   });
 
   it("game ends in a tie", async function () {
-    const plantDeck = await contract.plantDeck([0, 0, 0, 0, 9, 8, 9, 8]);
+    const bobsContract = contract.connect(bob);
+
+    const plantDeck = await bobsContract.plantDeck([0, 0, 0, 0, 9, 8, 9, 8]);
     await plantDeck.wait();
 
-    const createGame = await contract.createGame();
+    const createGame = await bobsContract.createGame();
     await createGame.wait();
 
-    const stand = await contract.stand();
+    const stand = await bobsContract.stand();
     await stand.wait();
 
-    await expect(stand).to.emit(contract, "StateChanged").withArgs(bob, State.Tie);
+    await expect(stand).to.emit(bobsContract, "StateChanged").withArgs(bob, State.Tie);
 
-    const game = await contract.getGame();
+    const game = await bobsContract.getGame();
 
     expect(game.cardsForPlayer).to.deep.eq([8, 9]);
     expect(game.cardsForDealer).to.deep.eq([8, 9]);
@@ -163,19 +188,21 @@ describe("Blockjack", function () {
   });
 
   it("player busts", async function () {
-    const plantDeck = await contract.plantDeck([0, 0, 0, 9, 8, 7, 8, 7]);
+    const bobsContract = contract.connect(bob);
+
+    const plantDeck = await bobsContract.plantDeck([0, 0, 0, 9, 8, 7, 8, 7]);
     await plantDeck.wait();
 
-    const createGame = await contract.createGame();
+    const createGame = await bobsContract.createGame();
     await createGame.wait();
 
-    const draw = await contract.draw();
+    const draw = await bobsContract.draw();
     await draw.wait();
 
-    await expect(draw).to.emit(contract, "CardsChangedForPlayer").withArgs(bob, [7, 8, 9]);
-    await expect(draw).to.emit(contract, "StateChanged").withArgs(bob, State.DealerWins);
+    await expect(draw).to.emit(bobsContract, "CardsChangedForPlayer").withArgs(bob, [7, 8, 9]);
+    await expect(draw).to.emit(bobsContract, "StateChanged").withArgs(bob, State.DealerWins);
 
-    const game = await contract.getGame();
+    const game = await bobsContract.getGame();
 
     expect(game.cardsForPlayer).to.deep.eq([7, 8, 9]);
     expect(game.cardsForDealer).to.deep.eq([7, 8]);
@@ -183,18 +210,20 @@ describe("Blockjack", function () {
   });
 
   it("player wins", async function () {
-    const plantDeck = await contract.plantDeck([0, 0, 0, 0, 9, 8, Q, J]);
+    const bobsContract = contract.connect(bob);
+
+    const plantDeck = await bobsContract.plantDeck([0, 0, 0, 0, 9, 8, Q, J]);
     await plantDeck.wait();
 
-    const createGame = await contract.createGame();
+    const createGame = await bobsContract.createGame();
     await createGame.wait();
 
-    const stand = await contract.stand();
+    const stand = await bobsContract.stand();
     await stand.wait();
 
-    await expect(stand).to.emit(contract, "StateChanged").withArgs(bob, State.PlayerWins);
+    await expect(stand).to.emit(bobsContract, "StateChanged").withArgs(bob, State.PlayerWins);
 
-    const game = await contract.getGame();
+    const game = await bobsContract.getGame();
 
     expect(game.cardsForPlayer).to.deep.eq([J, Q]);
     expect(game.cardsForDealer).to.deep.eq([8, 9]);
@@ -202,16 +231,18 @@ describe("Blockjack", function () {
   });
 
   it("player wins early (Blockjack)", async function () {
-    const plantDeck = await contract.plantDeck([0, 0, 0, 0, 7, 6, A, K]);
+    const bobsContract = contract.connect(bob);
+
+    const plantDeck = await bobsContract.plantDeck([0, 0, 0, 0, 7, 6, A, K]);
     await plantDeck.wait();
 
-    const createGame = await contract.createGame();
+    const createGame = await bobsContract.createGame();
     await createGame.wait();
 
-    await expect(createGame).to.emit(contract, "CardsChangedForPlayer").withArgs(bob, [K, A]);
-    await expect(createGame).to.emit(contract, "StateChanged").withArgs(bob, State.PlayerWins);
+    await expect(createGame).to.emit(bobsContract, "CardsChangedForPlayer").withArgs(bob, [K, A]);
+    await expect(createGame).to.emit(bobsContract, "StateChanged").withArgs(bob, State.PlayerWins);
 
-    const game = await contract.getGame();
+    const game = await bobsContract.getGame();
 
     expect(game.cardsForPlayer).to.deep.eq([K, A]);
     expect(game.cardsForDealer).to.deep.eq([]);
@@ -219,21 +250,23 @@ describe("Blockjack", function () {
   });
 
   it("player wins late", async function () {
-    const plantDeck = await contract.plantDeck([0, 0, 0, 8, Q, J, 7, 6]);
+    const bobsContract = contract.connect(bob);
+
+    const plantDeck = await bobsContract.plantDeck([0, 0, 0, 8, Q, J, 7, 6]);
     await plantDeck.wait();
 
-    const createGame = await contract.createGame();
+    const createGame = await bobsContract.createGame();
     await createGame.wait();
 
-    const draw = await contract.draw();
+    const draw = await bobsContract.draw();
     await draw.wait();
 
-    const stand = await contract.stand();
+    const stand = await bobsContract.stand();
     await stand.wait();
 
-    await expect(stand).to.emit(contract, "StateChanged").withArgs(bob, State.PlayerWins);
+    await expect(stand).to.emit(bobsContract, "StateChanged").withArgs(bob, State.PlayerWins);
 
-    const game = await contract.getGame();
+    const game = await bobsContract.getGame();
 
     expect(game.cardsForPlayer).to.deep.eq([6, 7, 8]);
     expect(game.cardsForDealer).to.deep.eq([J, Q]);
