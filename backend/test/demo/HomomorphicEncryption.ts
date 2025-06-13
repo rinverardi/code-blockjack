@@ -8,7 +8,7 @@ import { awaitAllDecryptionResults, initGateway } from "../asyncDecrypt";
 import { createInstance } from "../instance";
 import { reencryptEuint8 } from "../reencrypt";
 
-describe("HomomorphicEncryption", function () {
+describe("Homomorphic Encryption", function () {
   let alice: Signer;
   let aliceAddress: string;
 
@@ -38,7 +38,7 @@ describe("HomomorphicEncryption", function () {
     contractAddress = await contract.getAddress();
   });
 
-  it("confidentialy encrypt, confidentialy decrypt", async function () {
+  it("Confidentialy encrypt, confidentialy decrypt", async function () {
     const input = await instance.createEncryptedInput(contractAddress, aliceAddress).add8(232).encrypt();
 
     const setValue = await contract.setValue(input.handles[0], input.inputProof);
@@ -50,7 +50,7 @@ describe("HomomorphicEncryption", function () {
     expect(value).to.eq(232);
   });
 
-  it("confidentialy encrypt, transparently decrypt", async function () {
+  it("Confidentialy encrypt, transparently decrypt", async function () {
     const input = await instance.createEncryptedInput(contractAddress, aliceAddress).add8(189).encrypt();
 
     const setValue = await contract.setValue(input.handles[0], input.inputProof);
@@ -70,7 +70,7 @@ describe("HomomorphicEncryption", function () {
     expect(valueAfter).to.eq(189);
   });
 
-  it("transparently encrypt, confidentialy decrypt", async function () {
+  it("Transparently encrypt, confidentialy decrypt", async function () {
     const encryptValue = await contract.encryptValue(72);
     await encryptValue.wait();
 
@@ -80,7 +80,7 @@ describe("HomomorphicEncryption", function () {
     expect(value).to.eq(72);
   });
 
-  it("transparently encrypt, transparently decrypt", async function () {
+  it("Transparently encrypt, transparently decrypt", async function () {
     const encryptValue = await contract.encryptValue(173);
     await encryptValue.wait();
 

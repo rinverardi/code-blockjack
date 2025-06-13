@@ -8,7 +8,7 @@ import { initGateway } from "../asyncDecrypt";
 import { createInstance } from "../instance";
 import { reencryptEuint8 } from "../reencrypt";
 
-describe("HomomorphicArithmetic", function () {
+describe("Homomorphic Arithmetic", function () {
   let alice: Signer;
   let aliceAddress: string;
 
@@ -46,7 +46,7 @@ describe("HomomorphicArithmetic", function () {
     contractAddress = await contract.getAddress();
   });
 
-  it("add values", async function () {
+  it("Add values", async function () {
     const input = await instance.createEncryptedInput(contractAddress, aliceAddress).add8(42).add8(43).encrypt();
 
     const addValues = await contract.addValues(input.handles[0], input.handles[1], input.inputProof);
@@ -60,7 +60,7 @@ describe("HomomorphicArithmetic", function () {
     this.test!.ctx!.result = result;
   });
 
-  it("mmultiply values", async function () {
+  it("Multiply values", async function () {
     const input = await instance.createEncryptedInput(contractAddress, aliceAddress).add8(6).add8(7).encrypt();
 
     const addValues = await contract.multiplyValues(input.handles[0], input.handles[1], input.inputProof);
@@ -74,7 +74,7 @@ describe("HomomorphicArithmetic", function () {
     this.test!.ctx!.result = result;
   });
 
-  it("random value", async function () {
+  it("Random value", async function () {
     const randomValue = await contract.randomValue();
     await randomValue.wait();
 
