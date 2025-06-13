@@ -2,7 +2,7 @@ import type { HomomorphicEncryption } from "@backend-types/contracts/demo/Homomo
 import { BrowserProvider, Contract, Signer } from "ethers";
 import { useEffect, useState } from "react";
 
-import { getInstance } from "../../fhevmjs";
+import { wrapContract, wrapInstance } from "../../lib/Chaos";
 
 export const HomomorphicEncryptionForm = () => {
   const [busy, setBusy] = useState<boolean>(false);
@@ -30,7 +30,7 @@ export const HomomorphicEncryptionForm = () => {
 
       const contract = new Contract(deployment.address, deployment.abi, signer) as Contract & HomomorphicEncryption;
 
-      setContract(contract);
+      setContract(wrapContract(contract, "HomomorphicEncryption"));
     }
 
     init();
@@ -83,9 +83,9 @@ export const HomomorphicEncryptionForm = () => {
     setBusy(true);
 
     try {
-      const { publicKey, privateKey } = getInstance().generateKeypair();
+      const { publicKey, privateKey } = wrapInstance().generateKeypair();
 
-      const eip712 = getInstance().createEIP712(publicKey, await contract!.getAddress());
+      const eip712 = wrapInstance().createEIP712(publicKey, await contract!.getAddress());
 
       const signature = await signer!.signTypedData(
         eip712.domain,
@@ -93,7 +93,7 @@ export const HomomorphicEncryptionForm = () => {
         eip712.message,
       );
 
-      const result = await getInstance().reencrypt(
+      const result = await wrapInstance().reencrypt(
         handle!.valueOf(),
         privateKey,
         publicKey,
@@ -128,7 +128,7 @@ export const HomomorphicEncryptionForm = () => {
     setBusy(true);
 
     try {
-      const input = await getInstance()
+      const input = await wrapInstance()
         .createEncryptedInput(await contract!.getAddress(), await signer!.getAddress())
         .add8(confidentialValue)
         .encrypt();

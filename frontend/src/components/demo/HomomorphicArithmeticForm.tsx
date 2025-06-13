@@ -2,7 +2,7 @@ import type { HomomorphicArithmetic } from "@backend-types/contracts/demo/Homomo
 import { BrowserProvider, Contract, Signer } from "ethers";
 import { useEffect, useState } from "react";
 
-import { getInstance } from "../../fhevmjs";
+import { wrapContract, wrapInstance } from "../../lib/Chaos";
 
 export const HomomorphicArithmeticForm = () => {
   const [addParam0, setAddParam0] = useState(42n);
@@ -32,16 +32,16 @@ export const HomomorphicArithmeticForm = () => {
 
       const contract = new Contract(deployment.address, deployment.abi, signer) as Contract & HomomorphicArithmetic;
 
-      setContract(contract);
+      setContract(wrapContract(contract, "HomomorphicArithmetic"));
     }
 
     init();
   }, []);
 
   async function getResult() {
-    const { publicKey, privateKey } = getInstance().generateKeypair();
+    const { publicKey, privateKey } = wrapInstance().generateKeypair();
 
-    const signatureData = getInstance().createEIP712(publicKey, await contract!.getAddress());
+    const signatureData = wrapInstance().createEIP712(publicKey, await contract!.getAddress());
 
     const signature = await signer!.signTypedData(
       signatureData.domain,
@@ -49,7 +49,7 @@ export const HomomorphicArithmeticForm = () => {
       signatureData.message,
     );
 
-    return await getInstance().reencrypt(
+    return await wrapInstance().reencrypt(
       await contract!.getHandle(),
       privateKey,
       publicKey,
@@ -95,7 +95,7 @@ export const HomomorphicArithmeticForm = () => {
     setBusy(true);
 
     try {
-      const input = await getInstance()
+      const input = await wrapInstance()
         .createEncryptedInput(await contract!.getAddress(), await signer!.getAddress())
         .add8(addParam0)
         .add8(addParam1)
@@ -116,7 +116,7 @@ export const HomomorphicArithmeticForm = () => {
     setBusy(true);
 
     try {
-      const input = await getInstance()
+      const input = await wrapInstance()
         .createEncryptedInput(await contract!.getAddress(), await signer!.getAddress())
         .add8(multiplyParam0)
         .add8(multiplyParam1)

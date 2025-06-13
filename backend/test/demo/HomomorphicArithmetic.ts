@@ -1,3 +1,4 @@
+import { expect } from "chai";
 import { Signer } from "ethers";
 import { FhevmInstance } from "fhevmjs/node";
 import { ethers } from "hardhat";
@@ -5,25 +6,24 @@ import { ethers } from "hardhat";
 import { HomomorphicArithmetic } from "../../types/contracts/demo/HomomorphicArithmetic";
 import { initGateway } from "../asyncDecrypt";
 import { createInstance } from "../instance";
-import { debug } from "../utils";
+import { reencryptEuint8 } from "../reencrypt";
 
 describe("HomomorphicArithmetic", function () {
-
-  // XXX Clean up!
-
   let alice: Signer;
   let aliceAddress: string;
-
-  // XXX Clean up!
 
   let contract: HomomorphicArithmetic;
   let contractAddress: string;
 
-  // XXX Clean up!
-
   let instance: FhevmInstance;
 
-  // XXX Clean up!
+  afterEach(function () {
+    const test = this.currentTest;
+
+    if (test?.state === "passed") {
+      console.log(`\t🞂 ${test.ctx!.result}`);
+    }
+  });
 
   before(async function () {
     const signers = await ethers.getSigners();
@@ -46,13 +46,40 @@ describe("HomomorphicArithmetic", function () {
     contractAddress = await contract.getAddress();
   });
 
+  it("add values", async function () {
+    const input = await instance.createEncryptedInput(contractAddress, aliceAddress).add8(42).add8(43).encrypt();
+
+    const addValues = await contract.addValues(input.handles[0], input.handles[1], input.inputProof);
+    await addValues.wait();
+
+    const handle = await contract.getHandle();
+    const result = await reencryptEuint8(alice, instance, handle, contractAddress);
+
+    expect(result).to.eq(85);
+
+    this.test!.ctx!.result = result;
+  });
+
+  it("mmultiply values", async function () {
+    const input = await instance.createEncryptedInput(contractAddress, aliceAddress).add8(6).add8(7).encrypt();
+
+    const addValues = await contract.multiplyValues(input.handles[0], input.handles[1], input.inputProof);
+    await addValues.wait();
+
+    const handle = await contract.getHandle();
+    const result = await reencryptEuint8(alice, instance, handle, contractAddress);
+
+    expect(result).to.eq(42);
+
+    this.test!.ctx!.result = result;
+  });
+
   it("random value", async function () {
     const randomValue = await contract.randomValue();
     await randomValue.wait();
 
     const handle = await contract.getHandle();
-    const value = await debug.decrypt8(handle);
 
-    console.log("\tvalue", value);
+    this.test!.ctx!.result = await reencryptEuint8(alice, instance, handle, contractAddress);
   });
 });
