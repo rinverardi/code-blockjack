@@ -2,7 +2,7 @@ import { expect } from "chai";
 import { Signer } from "ethers";
 import { ethers } from "hardhat";
 
-import { TestableBlockjack } from "../../types";
+import { NaiveBlockjackForTesting } from "../../types";
 
 const [J, Q, K, A] = [11, 12, 13, 14];
 
@@ -14,14 +14,14 @@ enum State {
   Waiting,
 }
 
-describe("Blockjack", function () {
+describe("Naive Blockjack", function () {
   let bob: Signer;
   let carol: Signer;
 
-  let contract: TestableBlockjack;
+  let contract: NaiveBlockjackForTesting;
 
   before(async function () {
-    const factory = await ethers.getContractFactory("TestableBlockjack");
+    const factory = await ethers.getContractFactory("NaiveBlockjackForTesting");
 
     contract = await factory.deploy();
 

@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.24;
 
-contract Blockjack {
+contract NaiveBlockjack {
     struct Game {
         uint8[] cardsForDealer;
         uint8[] cardsForPlayer;
