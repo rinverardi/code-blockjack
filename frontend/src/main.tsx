@@ -3,8 +3,7 @@ import ReactDOM from "react-dom/client";
 
 import WalletConnection from "./components/WalletConnection.tsx";
 import WalletDetection from "./components/WalletDetection.tsx";
-import HomomorphicArithmeticForm from "./components/demo/HomomorphicArithmeticForm.tsx";
-import HomomorphicEncryptionForm from "./components/demo/HomomorphicEncryptionForm.tsx";
+import NaiveBlockjackForm from "./components/game/NaiveBlockjackForm.tsx";
 import "./main.css";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
@@ -12,8 +11,11 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     <WalletDetection>
       <WalletConnection>
         <div id="content">
+          <NaiveBlockjackForm />
+          {/*
           <HomomorphicArithmeticForm />
           <HomomorphicEncryptionForm />
+          */}
         </div>
         <div id="progress">
           <div id="progress__indicator" />
