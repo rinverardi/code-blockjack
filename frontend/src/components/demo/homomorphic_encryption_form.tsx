@@ -2,10 +2,10 @@ import type { HomomorphicEncryption } from "@backend-types/contracts/demo/Homomo
 import { BrowserProvider, Contract, Signer } from "ethers";
 import { useEffect, useState } from "react";
 
-import { wrapContract, wrapInstance } from "../../lib/Chaos";
-import { toggleProgress } from "../../lib/Progress";
+import { wrapContract, wrapInstance } from "../../lib/chaos";
+import { toggleProgress } from "../../lib/progress";
 
-export const HomomorphicEncryptionForm = () => {
+const HomomorphicEncryptionForm = () => {
   const [contract, setContract] = useState<(Contract & HomomorphicEncryption) | null>(null);
   const [confidentialResult, setConfidentialResult] = useState<bigint | null>(null);
   const [confidentialValue, setConfidentialValue] = useState(42n);

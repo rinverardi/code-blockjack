@@ -2,11 +2,11 @@ import type { NaiveBlockjack } from "@backend-types/contracts/game/NaiveBlockjac
 import { BigNumberish, BrowserProvider, Contract } from "ethers";
 import { useEffect, useState } from "react";
 
-import { wrapContract } from "../../lib/Chaos";
-import { toggleProgress } from "../../lib/Progress";
-import { GameState } from "../../lib/game/GameState";
+import { wrapContract } from "../../lib/chaos";
+import { toggleProgress } from "../../lib/progress";
+import { GameState } from "../../lib/game/game_state";
 
-export const NaiveBlockjackForm = () => {
+const NaiveBlockjackForm = () => {
   const [contract, setContract] = useState<(Contract & NaiveBlockjack) | null>(null);
   const [game, setGame] = useState<NaiveBlockjack.GameStruct | null>(null);
 
