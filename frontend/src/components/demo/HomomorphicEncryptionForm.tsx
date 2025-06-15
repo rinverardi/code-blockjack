@@ -171,43 +171,43 @@ export const HomomorphicEncryptionForm = () => {
     <>
       <h1>Homomorphic Encryption</h1>
       <p>
-        function
+        <span>function</span>
         <button onClick={onClickDecryptValue}>decryptValue</button>
-        {"( )"}
+        <span>{"( )"}</span>
       </p>
       <p>
-        function
+        <span>function</span>
         <button onClick={onClickGetHandle}>getHandle</button>
-        {"( )"} &rarr;
+        <span>{"( )"} &rarr;</span>
         <input readOnly value={showHandle(handle)} />
       </p>
       <p>
-        function
+        <span>function</span>
         <button onClick={onClickGetConfidentialValue}>getConfidentialValue</button>
-        {"("}
+        <span>{"("}</span>
         <input readOnly value={showHandle(handle)} />
-        {")"} &rarr;
+        <span>{")"} &rarr;</span>
         <input readOnly value={confidentialResult?.toString()} />
       </p>
       <p>
-        function
+        <span>function</span>
         <button onClick={onClickGetTransparentValue}>getTransparentValue</button>
-        {"( )"} &rarr;
+        <span>{"( )"} &rarr;</span>
         <input readOnly value={transparentResult?.toString()} />
       </p>
       <p>
-        function
+        <span>function</span>
         <button onClick={onClickSetConfidentialValue}>setConfidentialValue</button>
-        {"("}
+        <span>{"("}</span>
         <input onChange={onChangeConfidentialValue} value={confidentialValue.toString()} />
-        {")"}
+        <span>{")"}</span>
       </p>
       <p>
-        function
+        <span>function</span>
         <button onClick={onClickSetTransparentValue}>setTransparentValue</button>
-        {"("}
+        <span>{"("}</span>
         <input onChange={onChangeTransparentValue} value={transparentValue.toString()} />
-        {")"}
+        <span>{")"}</span>
       </p>
     </>
   );

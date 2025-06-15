@@ -152,29 +152,29 @@ export const HomomorphicArithmeticForm = () => {
     <>
       <h1>Homomorphic Arithmetic</h1>
       <p>
-        function
+        <span>function</span>
         <button onClick={onClickAddValues}>addValues</button>
-        {"("}
+        <span>{"("}</span>
         <input onChange={onChangeAddParam0} value={addParam0.toString()} />
-        ,
+        <span>,</span>
         <input onChange={onChangeAddParam1} value={addParam1.toString()} />
-        {")"} &rarr;
+        <span>{")"} &rarr;</span>
         <input readOnly value={addResult?.toString()} />
       </p>
       <p>
-        function
+        <span>function</span>
         <button onClick={onClickMultiplyValues}>multiplyValues</button>
-        {"("}
+        <span>{"("}</span>
         <input onChange={onChangeMultiplyParam0} value={multiplyParam0.toString()} />
-        ,
+        <span>,</span>
         <input onChange={onChangeMultiplyParam1} value={multiplyParam1.toString()} />
-        {")"} &rarr;
+        <span>{")"} &rarr;</span>
         <input readOnly value={multiplyResult?.toString()} />
       </p>
       <p>
-        function
+        <span>function</span>
         <button onClick={onClickRandomValue}>randomValue</button>
-        {"( )"} &rarr;
+        <span>{"( )"} &rarr;</span>
         <input readOnly value={randomResult?.toString()} />
       </p>
     </>
