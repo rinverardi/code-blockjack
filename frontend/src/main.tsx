@@ -11,9 +11,12 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <WalletDetection>
       <WalletConnection>
-        <div className="content">
+        <div id="content">
           <HomomorphicArithmeticForm />
           <HomomorphicEncryptionForm />
+        </div>
+        <div id="progress">
+          <div id="progress__indicator" />
         </div>
       </WalletConnection>
     </WalletDetection>
