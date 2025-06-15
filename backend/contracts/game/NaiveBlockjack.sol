@@ -93,7 +93,7 @@ contract NaiveBlockjack {
     function _randomCard(uint256 seed) private view returns (uint8) {
         uint256 value = uint256(keccak256(abi.encodePacked(seed, block.timestamp, block.prevrandao, msg.sender)));
 
-        return uint8((value % 9) + 6);
+        return uint8((value % 13) + 2);
     }
 
     function _rateCard(uint8 card) private pure returns (uint8) {
