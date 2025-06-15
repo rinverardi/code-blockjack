@@ -196,11 +196,11 @@ describe("Naive Blockjack", function () {
     const createGame = await bobsContract.createGame();
     await createGame.wait();
 
-    const draw = await bobsContract.draw();
-    await draw.wait();
+    const hit = await bobsContract.hit();
+    await hit.wait();
 
-    await expect(draw).to.emit(bobsContract, "CardsChangedForPlayer").withArgs(bob, [7, 8, 9]);
-    await expect(draw).to.emit(bobsContract, "StateChanged").withArgs(bob, State.DealerWins);
+    await expect(hit).to.emit(bobsContract, "CardsChangedForPlayer").withArgs(bob, [7, 8, 9]);
+    await expect(hit).to.emit(bobsContract, "StateChanged").withArgs(bob, State.DealerWins);
 
     const game = await bobsContract.getGame();
 
@@ -258,8 +258,8 @@ describe("Naive Blockjack", function () {
     const createGame = await bobsContract.createGame();
     await createGame.wait();
 
-    const draw = await bobsContract.draw();
-    await draw.wait();
+    const hit = await bobsContract.hit();
+    await hit.wait();
 
     const stand = await bobsContract.stand();
     await stand.wait();

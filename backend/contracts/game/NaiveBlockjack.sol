@@ -75,9 +75,12 @@ contract NaiveBlockjack {
 
         emit StateChanged(msg.sender, State.Uninitialized);
     }
+
+    function getGame() public view returns (Game memory) {
+        return _games[msg.sender];
     }
 
-    function draw() public {
+    function hit() public {
         Game storage game = _games[msg.sender];
 
         require(game.state == State.Waiting, "Illegal state");
@@ -87,10 +90,6 @@ contract NaiveBlockjack {
         if (_rateCards(game.cardsForPlayer) > 21) {
             _setStatus(game, State.DealerWins);
         }
-    }
-
-    function getGame() public view returns (Game memory) {
-        return _games[msg.sender];
     }
 
     function _randomCard(uint256 seed) private view returns (uint8) {
