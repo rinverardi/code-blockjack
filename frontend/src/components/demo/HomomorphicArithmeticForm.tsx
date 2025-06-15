@@ -3,12 +3,12 @@ import { BrowserProvider, Contract, Signer } from "ethers";
 import { useEffect, useState } from "react";
 
 import { wrapContract, wrapInstance } from "../../lib/Chaos";
+import { toggleProgress } from "../../lib/Progress";
 
 export const HomomorphicArithmeticForm = () => {
   const [addParam0, setAddParam0] = useState(42n);
   const [addParam1, setAddParam1] = useState(43n);
   const [addResult, setAddResult] = useState<bigint | null>(null);
-  const [busy, setBusy] = useState<boolean>(false);
   const [contract, setContract] = useState<(Contract & HomomorphicArithmetic) | null>(null);
   const [multiplyParam0, setMultiplyParam0] = useState(6n);
   const [multiplyParam1, setMultiplyParam1] = useState(7n);
@@ -92,7 +92,7 @@ export const HomomorphicArithmeticForm = () => {
   }
 
   async function onClickAddValues() {
-    setBusy(true);
+    toggleProgress(true);
 
     try {
       const input = await wrapInstance()
@@ -109,11 +109,11 @@ export const HomomorphicArithmeticForm = () => {
       alert(error);
     }
 
-    setBusy(false);
+    toggleProgress(false);
   }
 
   async function onClickMultiplyValues() {
-    setBusy(true);
+    toggleProgress(true);
 
     try {
       const input = await wrapInstance()
@@ -130,54 +130,53 @@ export const HomomorphicArithmeticForm = () => {
       alert(error);
     }
 
-    setBusy(false);
+    toggleProgress(false);
   }
 
   async function onClickRandomValue() {
-    setBusy(true);
+    toggleProgress(true);
 
-    // try {
-    const randomValue = await contract!.randomValue();
-    await randomValue.wait();
+    try {
+      const randomValue = await contract!.randomValue();
+      await randomValue.wait();
 
-    setRandomResult(await getResult());
-    // } catch (error) {
-    //   alert(error);
-    // }
+      setRandomResult(await getResult());
+    } catch (error) {
+      alert(error);
+    }
 
-    setBusy(false);
+    toggleProgress(false);
   }
 
   return (
     <>
       <h1>Homomorphic Arithmetic</h1>
       <p>
-        function
+        <span>function</span>
         <button onClick={onClickAddValues}>addValues</button>
-        {"("}
+        <span>{"("}</span>
         <input onChange={onChangeAddParam0} value={addParam0.toString()} />
-        ,
+        <span>,</span>
         <input onChange={onChangeAddParam1} value={addParam1.toString()} />
-        {")"} &rarr;
+        <span>{")"} &rarr;</span>
         <input readOnly value={addResult?.toString()} />
       </p>
       <p>
-        function
+        <span>function</span>
         <button onClick={onClickMultiplyValues}>multiplyValues</button>
-        {"("}
+        <span>{"("}</span>
         <input onChange={onChangeMultiplyParam0} value={multiplyParam0.toString()} />
-        ,
+        <span>,</span>
         <input onChange={onChangeMultiplyParam1} value={multiplyParam1.toString()} />
-        {")"} &rarr;
+        <span>{")"} &rarr;</span>
         <input readOnly value={multiplyResult?.toString()} />
       </p>
       <p>
-        function
+        <span>function</span>
         <button onClick={onClickRandomValue}>randomValue</button>
-        {"( )"} &rarr;
+        <span>{"( )"} &rarr;</span>
         <input readOnly value={randomResult?.toString()} />
       </p>
-      <span className={"indicator indicator" + (busy ? "Busy" : "Idle")}>{busy ? "Busy" : "Idle"}</span>
     </>
   );
 };

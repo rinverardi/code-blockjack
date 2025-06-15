@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.24;
 
-contract Blockjack {
+contract NaiveBlockjack {
     struct Game {
         uint8[] cardsForDealer;
         uint8[] cardsForPlayer;
@@ -72,9 +72,15 @@ contract Blockjack {
 
     function deleteGame() public {
         delete _games[msg.sender];
+
+        emit StateChanged(msg.sender, State.Uninitialized);
     }
 
-    function draw() public {
+    function getGame() public view returns (Game memory) {
+        return _games[msg.sender];
+    }
+
+    function hit() public {
         Game storage game = _games[msg.sender];
 
         require(game.state == State.Waiting, "Illegal state");
@@ -86,14 +92,10 @@ contract Blockjack {
         }
     }
 
-    function getGame() public view returns (Game memory) {
-        return _games[msg.sender];
-    }
-
     function _randomCard(uint256 seed) private view returns (uint8) {
         uint256 value = uint256(keccak256(abi.encodePacked(seed, block.timestamp, block.prevrandao, msg.sender)));
 
-        return uint8((value % 9) + 6);
+        return uint8((value % 13) + 2);
     }
 
     function _rateCard(uint8 card) private pure returns (uint8) {
@@ -117,9 +119,9 @@ contract Blockjack {
     }
 
     function _setStatus(Game storage game, State state) private {
-        emit StateChanged(msg.sender, state);
-
         game.state = state;
+
+        emit StateChanged(msg.sender, state);
     }
 
     function stand() public {

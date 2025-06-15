@@ -3,9 +3,9 @@ import { BrowserProvider, Contract, Signer } from "ethers";
 import { useEffect, useState } from "react";
 
 import { wrapContract, wrapInstance } from "../../lib/Chaos";
+import { toggleProgress } from "../../lib/Progress";
 
 export const HomomorphicEncryptionForm = () => {
-  const [busy, setBusy] = useState<boolean>(false);
   const [contract, setContract] = useState<(Contract & HomomorphicEncryption) | null>(null);
   const [confidentialResult, setConfidentialResult] = useState<bigint | null>(null);
   const [confidentialValue, setConfidentialValue] = useState(42n);
@@ -53,7 +53,7 @@ export const HomomorphicEncryptionForm = () => {
   }
 
   async function onClickDecryptValue() {
-    setBusy(true);
+    toggleProgress(true);
 
     try {
       const decryptValue = await contract!.decryptValue();
@@ -62,11 +62,11 @@ export const HomomorphicEncryptionForm = () => {
       alert(error);
     }
 
-    setBusy(false);
+    toggleProgress(false);
   }
 
   async function onClickGetHandle() {
-    setBusy(true);
+    toggleProgress(true);
 
     try {
       const handle = await contract!.getHandle();
@@ -76,11 +76,11 @@ export const HomomorphicEncryptionForm = () => {
       alert(error);
     }
 
-    setBusy(false);
+    toggleProgress(false);
   }
 
   async function onClickGetConfidentialValue() {
-    setBusy(true);
+    toggleProgress(true);
 
     try {
       const { publicKey, privateKey } = wrapInstance().generateKeypair();
@@ -107,11 +107,11 @@ export const HomomorphicEncryptionForm = () => {
       alert(error);
     }
 
-    setBusy(false);
+    toggleProgress(false);
   }
 
   async function onClickGetTransparentValue() {
-    setBusy(true);
+    toggleProgress(true);
 
     try {
       const value = await contract!.getValue();
@@ -121,11 +121,11 @@ export const HomomorphicEncryptionForm = () => {
       alert(error);
     }
 
-    setBusy(false);
+    toggleProgress(false);
   }
 
   async function onClickSetConfidentialValue() {
-    setBusy(true);
+    toggleProgress(true);
 
     try {
       const input = await wrapInstance()
@@ -139,11 +139,11 @@ export const HomomorphicEncryptionForm = () => {
       alert(error);
     }
 
-    setBusy(false);
+    toggleProgress(false);
   }
 
   async function onClickSetTransparentValue() {
-    setBusy(true);
+    toggleProgress(true);
 
     try {
       const encryptValue = await contract!.encryptValue(transparentValue);
@@ -152,7 +152,7 @@ export const HomomorphicEncryptionForm = () => {
       alert(error);
     }
 
-    setBusy(false);
+    toggleProgress(false);
   }
 
   function showHandle(handle: bigint | null): string | undefined {
@@ -171,45 +171,44 @@ export const HomomorphicEncryptionForm = () => {
     <>
       <h1>Homomorphic Encryption</h1>
       <p>
-        function
+        <span>function</span>
         <button onClick={onClickDecryptValue}>decryptValue</button>
-        {"( )"}
+        <span>{"( )"}</span>
       </p>
       <p>
-        function
+        <span>function</span>
         <button onClick={onClickGetHandle}>getHandle</button>
-        {"( )"} &rarr;
+        <span>{"( )"} &rarr;</span>
         <input readOnly value={showHandle(handle)} />
       </p>
       <p>
-        function
+        <span>function</span>
         <button onClick={onClickGetConfidentialValue}>getConfidentialValue</button>
-        {"("}
+        <span>{"("}</span>
         <input readOnly value={showHandle(handle)} />
-        {")"} &rarr;
+        <span>{")"} &rarr;</span>
         <input readOnly value={confidentialResult?.toString()} />
       </p>
       <p>
-        function
+        <span>function</span>
         <button onClick={onClickGetTransparentValue}>getTransparentValue</button>
-        {"( )"} &rarr;
+        <span>{"( )"} &rarr;</span>
         <input readOnly value={transparentResult?.toString()} />
       </p>
       <p>
-        function
+        <span>function</span>
         <button onClick={onClickSetConfidentialValue}>setConfidentialValue</button>
-        {"("}
+        <span>{"("}</span>
         <input onChange={onChangeConfidentialValue} value={confidentialValue.toString()} />
-        {")"}
+        <span>{")"}</span>
       </p>
       <p>
-        function
+        <span>function</span>
         <button onClick={onClickSetTransparentValue}>setTransparentValue</button>
-        {"("}
+        <span>{"("}</span>
         <input onChange={onChangeTransparentValue} value={transparentValue.toString()} />
-        {")"}
+        <span>{")"}</span>
       </p>
-      <span className={"indicator indicator" + (busy ? "Busy" : "Idle")}>{busy ? "Busy" : "Idle"}</span>
     </>
   );
 };
