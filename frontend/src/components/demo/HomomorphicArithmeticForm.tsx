@@ -136,14 +136,14 @@ export const HomomorphicArithmeticForm = () => {
   async function onClickRandomValue() {
     setBusy(true);
 
-    // try {
-    const randomValue = await contract!.randomValue();
-    await randomValue.wait();
+    try {
+      const randomValue = await contract!.randomValue();
+      await randomValue.wait();
 
-    setRandomResult(await getResult());
-    // } catch (error) {
-    //   alert(error);
-    // }
+      setRandomResult(await getResult());
+    } catch (error) {
+      alert(error);
+    }
 
     setBusy(false);
   }
