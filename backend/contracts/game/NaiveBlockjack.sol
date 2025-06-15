@@ -72,6 +72,9 @@ contract NaiveBlockjack {
 
     function deleteGame() public {
         delete _games[msg.sender];
+
+        emit StateChanged(msg.sender, State.Uninitialized);
+    }
     }
 
     function draw() public {
@@ -117,9 +120,9 @@ contract NaiveBlockjack {
     }
 
     function _setStatus(Game storage game, State state) private {
-        emit StateChanged(msg.sender, state);
-
         game.state = state;
+
+        emit StateChanged(msg.sender, state);
     }
 
     function stand() public {
