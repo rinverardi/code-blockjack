@@ -52,7 +52,7 @@ export function decorateInstance() {
 function delay(target: string, targetFunction: string, maxDuration: number) {
   const randomDuration = Math.round(Math.random() * maxDuration);
 
-  console.log(`⌛️ Delaying ${targetFunction}.${target} for ${randomDuration} ms.`);
+  console.log(`Delaying ${targetFunction}.${target} for ${randomDuration} ms ...`);
 
   return new Promise((resolve) => setTimeout(resolve, randomDuration));
 }
