@@ -129,6 +129,7 @@ input {
 #progress {
   background: var(--white);
   left: 0;
+  opacity: 0.8;
   position: fixed;
   top: 0;
   bottom: 0;

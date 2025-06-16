@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 import { wrapContract } from "../../lib/chaos";
 import { GameState } from "../../lib/game/game_state";
-import { toggleProgress } from "../../lib/progress";
+import { Progress, setProgress } from "../../lib/progress";
 import Card from "./card";
 
 const NaiveBlockjackForm = () => {
@@ -39,7 +39,7 @@ const NaiveBlockjackForm = () => {
       updateCardsForPlayer(undefined, game.cardsForPlayer);
       updateState(undefined, game.state);
 
-      toggleProgress(false);
+      setProgress(Progress.Idle);
     }
 
     init();
@@ -131,66 +131,78 @@ const NaiveBlockjackForm = () => {
   }
 
   async function onClickCreateGame() {
-    toggleProgress(true);
+    setProgress(Progress.Sending);
 
     try {
       const createGame = await contract!.createGame({ gasLimit: 250_000 });
       await createGame.wait();
+
+      setProgress(Progress.Receiving);
     } catch (error) {
       alert(error);
-    }
 
-    toggleProgress(false);
+      setProgress(Progress.Idle);
+    }
   }
 
   async function onClickDeleteGame() {
-    toggleProgress(true);
+    setProgress(Progress.Sending);
 
     try {
       const deleteGame = await contract!.deleteGame();
       await deleteGame.wait();
+
+      setProgress(Progress.Receiving);
     } catch (error) {
       alert(error);
-    }
 
-    toggleProgress(false);
+      setProgress(Progress.Idle);
+    }
   }
 
   async function onClickHit() {
-    toggleProgress(true);
+    setProgress(Progress.Sending);
 
     try {
       const hit = await contract!.hit();
       await hit.wait();
+
+      setProgress(Progress.Receiving);
     } catch (error) {
       alert(error);
-    }
 
-    toggleProgress(false);
+      setProgress(Progress.Idle);
+    }
   }
 
   async function onClickStand() {
-    toggleProgress(true);
+    setProgress(Progress.Sending);
 
     try {
       const stand = await contract!.stand();
       await stand.wait();
+
+      setProgress(Progress.Receiving);
     } catch (error) {
       alert(error);
-    }
 
-    toggleProgress(false);
+      setProgress(Progress.Idle);
+    }
   }
 
   function updateCardsForDealer(game: string | undefined, cardsForDealer: BigNumberish[]) {
     if (!game || game === address) {
       setCardsForDealer(cardsForDealer.map((card) => Number(card)));
+
+      setProgress(Progress.Idle);
     }
   }
 
   function updateCardsForPlayer(game: string | undefined, cardsForPlayer: BigNumberish[]) {
     if (!game || game === address) {
       setCardsForPlayer(cardsForPlayer.map((card) => Number(card)));
+
+      setProgress(Progress.Idle);
     }
   }
 
@@ -204,6 +216,8 @@ const NaiveBlockjackForm = () => {
       }
 
       setState(stateValue);
+
+      setProgress(Progress.Idle);
     }
   }
 

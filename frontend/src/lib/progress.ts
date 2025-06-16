@@ -1,5 +1,29 @@
-export function toggleProgress(display: boolean) {
-  const element = document.getElementById("progress");
+export enum Progress {
+  Idle,
+  Receiving,
+  Sending,
+}
 
-  element!.style.display = display ? "block" : "none";
+export function clearProgress() {}
+
+export function setProgress(progress: Progress) {
+  const element = document.getElementById("progress")!;
+
+  switch (progress) {
+    case Progress.Idle:
+      element.style.display = "none";
+      break;
+
+    case Progress.Receiving:
+      console.log("Receiving ...");
+
+      element.style.display = "block";
+      break;
+
+    case Progress.Sending:
+      console.log("Sending ...");
+
+      element.style.display = "block";
+      break;
+  }
 }
