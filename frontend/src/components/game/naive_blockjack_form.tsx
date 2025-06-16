@@ -3,8 +3,9 @@ import { BigNumberish, BrowserProvider, Contract } from "ethers";
 import { useEffect, useState } from "react";
 
 import { wrapContract } from "../../lib/chaos";
-import { toggleProgress } from "../../lib/progress";
 import { GameState } from "../../lib/game/game_state";
+import { toggleProgress } from "../../lib/progress";
+import Card from "./card";
 
 const NaiveBlockjackForm = () => {
   const [cardsForDealer, setCardsForDealer] = useState<number[] | null>(null);
@@ -69,26 +70,13 @@ const NaiveBlockjackForm = () => {
     }
   }
 
-  function displayCard(card: number) {
-    if (card < 11) {
-      return card;
-    } else if (card < 14) {
-      return 10;
-    } else {
-      return 11;
-    }
-  }
-
   function displayCards(cards: number[]) {
     return (
-      <p>
+      <div className="cards">
         {cards.map((card, cardIndex) => (
-          <>
-            {cardIndex > 0 && ", "}
-            {displayCard(card)}
-          </>
+          <Card card={card} cardIndex={cardIndex} />
         ))}
-      </p>
+      </div>
     );
   }
 
