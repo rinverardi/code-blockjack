@@ -2,13 +2,16 @@ import type { NaiveBlockjack } from "@backend-types/contracts/game/NaiveBlockjac
 import { BigNumberish, BrowserProvider, Contract } from "ethers";
 import { useEffect, useState } from "react";
 
-import { wrapContract } from "../../lib/Chaos";
-import { toggleProgress } from "../../lib/Progress";
-import { GameState } from "../../lib/game/GameState";
+import { wrapContract } from "../../lib/chaos";
+import { GameState } from "../../lib/game/game_state";
+import { toggleProgress } from "../../lib/progress";
+import Card from "./card";
 
-export const NaiveBlockjackForm = () => {
+const NaiveBlockjackForm = () => {
+  const [cardsForDealer, setCardsForDealer] = useState<number[] | null>(null);
+  const [cardsForPlayer, setCardsForPlayer] = useState<number[] | null>(null);
   const [contract, setContract] = useState<(Contract & NaiveBlockjack) | null>(null);
-  const [game, setGame] = useState<NaiveBlockjack.GameStruct | null>(null);
+  const [state, setState] = useState<GameState | null>(null);
 
   const provider = new BrowserProvider(window.ethereum);
 
@@ -25,7 +28,12 @@ export const NaiveBlockjackForm = () => {
       const contract = new Contract(deployment.address, deployment.abi, signer) as Contract & NaiveBlockjack;
 
       setContract(wrapContract(contract, "NaiveBlockjack"));
-      setGame(await contract.getGame());
+
+      const game = await contract.getGame();
+
+      updateCardsForDealer(undefined, game.cardsForDealer);
+      updateCardsForPlayer(undefined, game.cardsForPlayer);
+      updateState(undefined, game.state);
 
       toggleProgress(false);
     }
@@ -35,22 +43,6 @@ export const NaiveBlockjackForm = () => {
 
   useEffect(() => {
     if (contract) {
-      const updateCardsForDealer = (_: string, cardsForDealer: BigNumberish[]) => {
-        setGame((game) => game && { ...game, cardsForDealer });
-      };
-
-      const updateCardsForPlayer = (_: string, cardsForPlayer: BigNumberish[]) => {
-        setGame((game) => game && { ...game, cardsForPlayer });
-      };
-
-      const updateState = (_: string, state: BigNumberish) => {
-        if (state == GameState.Uninitialized) {
-          setGame((game) => game && { ...game, cardsForDealer: [], cardsForPlayer: [], state });
-        } else {
-          setGame((game) => game && { ...game, state });
-        }
-      };
-
       contract.on(contract.filters.CardsChangedForDealer, updateCardsForDealer);
       contract.on(contract.filters.CardsChangedForPlayer, updateCardsForPlayer);
       contract.on(contract.filters.StateChanged, updateState);
@@ -64,9 +56,7 @@ export const NaiveBlockjackForm = () => {
   }, [contract]);
 
   function displayActions() {
-    const state = game?.state;
-
-    if (state == GameState.DealerWins || state == GameState.PlayerWins || state == GameState.Tie) {
+    if (isGameOver()) {
       return <button onClick={onClickDeleteGame}>Delete game</button>;
     } else if (state == GameState.Uninitialized) {
       return <button onClick={onClickCreateGame}>Create game</button>;
@@ -80,59 +70,40 @@ export const NaiveBlockjackForm = () => {
     }
   }
 
-  function displayCard(card: number) {
-    if (card < 11) {
-      return card;
-    } else if (card < 14) {
-      return 10;
-    } else {
-      return 11;
-    }
-  }
-
-  function displayCards(cards: BigNumberish[]) {
-    return cards.map((card, cardIndex) => {
-      const cardValue = Number(card);
-
-      return (
-        <>
-          {cardIndex > 0 && ", "}
-          {displayCard(cardValue)}
-        </>
-      );
-    });
+  function displayCards(cards: number[], concealed: boolean) {
+    return (
+      <div className="cards">
+        {cards.map((card, cardIndex) => (
+          <Card card={card} cardIndex={cardIndex} concealed={cardIndex == 0 && concealed} />
+        ))}
+      </div>
+    );
   }
 
   function displayCardsForDealer() {
-    const cards = game?.cardsForDealer;
-
-    if (cards?.length) {
+    if (cardsForDealer?.length) {
       return (
         <>
           <h2>Dealer's Cards</h2>
-          {displayCards(cards)}
+          {displayCards(cardsForDealer, !isGameOver())}
         </>
       );
     }
   }
 
   function displayCardsForPlayer() {
-    const cards = game?.cardsForPlayer;
-
-    if (cards?.length) {
+    if (cardsForPlayer?.length) {
       return (
         <>
           <h2>Player's Cards</h2>
-          <p>{displayCards(cards)}</p>
+          {displayCards(cardsForPlayer, false)}
         </>
       );
     }
   }
 
   function displayState() {
-    const gameState = Number(game?.state);
-
-    switch (gameState) {
+    switch (state) {
       case GameState.DealerWins:
         return <p>You lose.</p>;
 
@@ -145,6 +116,10 @@ export const NaiveBlockjackForm = () => {
       case GameState.Waiting:
         return <p>It's your turn.</p>;
     }
+  }
+
+  function isGameOver() {
+    return state == GameState.DealerWins || state == GameState.PlayerWins || state == GameState.Tie;
   }
 
   async function onClickCreateGame() {
@@ -197,6 +172,25 @@ export const NaiveBlockjackForm = () => {
     }
 
     toggleProgress(false);
+  }
+
+  function updateCardsForDealer(_: string | undefined, cardsForDealer: BigNumberish[]) {
+    setCardsForDealer(cardsForDealer.map((card) => Number(card)));
+  }
+
+  function updateCardsForPlayer(_: string | undefined, cardsForPlayer: BigNumberish[]) {
+    setCardsForPlayer(cardsForPlayer.map((card) => Number(card)));
+  }
+
+  function updateState(_: string | undefined, state: BigNumberish) {
+    const stateValue = Number(state);
+
+    if (stateValue === GameState.Uninitialized) {
+      setCardsForDealer([]);
+      setCardsForPlayer([]);
+    }
+
+    setState(stateValue);
   }
 
   return (

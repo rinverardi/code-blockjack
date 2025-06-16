@@ -1,9 +1,9 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 
-import WalletConnection from "./components/WalletConnection.tsx";
-import WalletDetection from "./components/WalletDetection.tsx";
-import NaiveBlockjackForm from "./components/game/NaiveBlockjackForm.tsx";
+import NaiveBlockjackForm from "./components/game/naive_blockjack_form.tsx";
+import WalletConnection from "./components/wallet_connection.tsx";
+import WalletDetection from "./components/wallet_detection.tsx";
 import "./main.css";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(

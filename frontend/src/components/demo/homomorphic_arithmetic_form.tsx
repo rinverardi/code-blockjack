@@ -2,10 +2,10 @@ import type { HomomorphicArithmetic } from "@backend-types/contracts/demo/Homomo
 import { BrowserProvider, Contract, Signer } from "ethers";
 import { useEffect, useState } from "react";
 
-import { wrapContract, wrapInstance } from "../../lib/Chaos";
-import { toggleProgress } from "../../lib/Progress";
+import { wrapContract, wrapInstance } from "../../lib/chaos";
+import { toggleProgress } from "../../lib/progress";
 
-export const HomomorphicArithmeticForm = () => {
+const HomomorphicArithmeticForm = () => {
   const [addParam0, setAddParam0] = useState(42n);
   const [addParam1, setAddParam1] = useState(43n);
   const [addResult, setAddResult] = useState<bigint | null>(null);

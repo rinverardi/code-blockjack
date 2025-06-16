@@ -1,21 +1,22 @@
 * {
+  box-sizing: border-box;
   font-family: "Oxanium", sans-serif;
   font-size: 16px;
   outline: none;
 }
 
 body {
-  background: white;
-  color: black;
+  background: var(--white);
+  color: var(--black);
   margin: 0;
   padding-bottom: 40px;
 }
 
 button {
-  background: black;
-  border: 2px solid black;
+  background: var(--black);
+  border: 2px solid var(--black);
   border-radius: 4px;
-  color: white;
+  color: var(--white);
   padding: 6px 8px;
 }
 
@@ -28,8 +29,84 @@ span + input {
 }
 
 button:active {
-  background: white;
-  color: black;
+  background: var(--white);
+  color: var(--black);
+}
+
+.card {
+  background: var(--white);
+  border: 1px solid var(--gray);
+  border-radius: 8px;
+  display: inline-block;
+  height: 160px;
+  position: relative;
+  text-align: center;
+  user-select: none;
+  width: 112px;
+}
+
+.card + .card {
+  margin-left: 16px;
+}
+
+.card--concealed::after {
+  background: var(--greenish);
+  border-radius: 6px;
+  bottom: 6px;
+  content: "";
+  left: 6px;
+  position: absolute;
+  right: 6px;
+  top: 6px;
+}
+
+.card__figure--1 {
+  align-items: center;
+  display: flex;
+  height: 100%;
+  justify-content: center;
+}
+
+.card__figure--1 span {
+  font-size: 40px;
+}
+
+.card__figure--n {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  height: 100%;
+  justify-content: space-evenly;
+  padding: 24px;
+}
+
+.card__figure--n span {
+  font-size: 24px;
+  width: 33%;
+}
+
+.card__index {
+  left: 4px;
+  position: absolute;
+  top: 4px;
+  width: 20px;
+}
+
+.card__index--bottom {
+  bottom: 4px;
+  left: auto;
+  right: 4px;
+  top: auto;
+  transform: rotate(180deg);
+}
+
+.card__index span {
+  font-size: 16px;
+}
+
+.cards {
+  display: flex;
+  margin-bottom: 16px;
 }
 
 #content {
@@ -43,14 +120,14 @@ h1 {
 }
 
 input {
-  border: 2px solid black;
+  border: 2px solid var(--black);
   border-radius: 4px;
   padding: 6px 8px;
   width: 80px;
 }
 
 #progress {
-  background: white;
+  background: var(--white);
   left: 0;
   position: fixed;
   top: 0;
@@ -60,7 +137,7 @@ input {
 
 #progress__indicator {
   animation: spin 1s ease-in-out infinite;
-  border: 4px solid black;
+  border: 4px solid var(--black);
   border-radius: 50%;
   border-top-color: transparent;
   height: 96px;
@@ -71,25 +148,47 @@ input {
   width: 96px;
 }
 
+:root {
+  --black: #000;
+  --blue: #44b;
+  --gray: #888;
+  --green: #282;
+  --greenish: #8a8;
+  --red: #c44;
+  --white: #fff;
+}
+
 .status {
   align-items: center;
-  background: black;
-  color: white;
+  background: var(--black);
+  color: var(--white);
   display: flex;
   justify-content: space-between;
   padding: 12px;
 }
 
 .status button {
-  background: green;
+  background: var(--green);
   border: none;
-  color: white;
+  color: var(--white);
   padding: 8px 10px;
 }
 
 .status button:active {
-  background: white;
-  color: black;
+  background: var(--white);
+  color: var(--black);
+}
+
+.suit--blue {
+  color: var(--blue);
+}
+
+.suit--green {
+  color: var(--green);
+}
+
+.suit--red {
+  color: var(--red);
 }
 
 @font-face {
