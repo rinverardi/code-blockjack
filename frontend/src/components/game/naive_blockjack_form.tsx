@@ -8,6 +8,7 @@ import { toggleProgress } from "../../lib/progress";
 import Card from "./card";
 
 const NaiveBlockjackForm = () => {
+  const [address, setAddress] = useState<string | null>(null);
   const [cardsForDealer, setCardsForDealer] = useState<number[] | null>(null);
   const [cardsForPlayer, setCardsForPlayer] = useState<number[] | null>(null);
   const [contract, setContract] = useState<(Contract & NaiveBlockjack) | null>(null);
@@ -18,6 +19,9 @@ const NaiveBlockjackForm = () => {
   useEffect(() => {
     async function init() {
       const signer = await provider.getSigner();
+      const signerAddress = await signer.getAddress();
+
+      setAddress(signerAddress);
 
       const deployment = await import(
         import.meta.env.MOCKED
@@ -42,17 +46,21 @@ const NaiveBlockjackForm = () => {
   }, []);
 
   useEffect(() => {
-    if (contract) {
-      contract.on(contract.filters.CardsChangedForDealer, updateCardsForDealer);
-      contract.on(contract.filters.CardsChangedForPlayer, updateCardsForPlayer);
-      contract.on(contract.filters.StateChanged, updateState);
+    async function init() {
+      if (contract) {
+        contract.on(contract.filters.CardsChangedForDealer, updateCardsForDealer);
+        contract.on(contract.filters.CardsChangedForPlayer, updateCardsForPlayer);
+        contract.on(contract.filters.StateChanged, updateState);
 
-      return () => {
-        contract.off(contract.filters.CardsChangedForDealer, updateCardsForDealer);
-        contract.off(contract.filters.CardsChangedForPlayer, updateCardsForPlayer);
-        contract.off(contract.filters.StateChanged, updateState);
-      };
+        return () => {
+          contract.off(contract.filters.CardsChangedForDealer, updateCardsForDealer);
+          contract.off(contract.filters.CardsChangedForPlayer, updateCardsForPlayer);
+          contract.off(contract.filters.StateChanged, updateState);
+        };
+      }
     }
+
+    init();
   }, [contract]);
 
   function displayActions() {
@@ -174,23 +182,29 @@ const NaiveBlockjackForm = () => {
     toggleProgress(false);
   }
 
-  function updateCardsForDealer(_: string | undefined, cardsForDealer: BigNumberish[]) {
-    setCardsForDealer(cardsForDealer.map((card) => Number(card)));
-  }
-
-  function updateCardsForPlayer(_: string | undefined, cardsForPlayer: BigNumberish[]) {
-    setCardsForPlayer(cardsForPlayer.map((card) => Number(card)));
-  }
-
-  function updateState(_: string | undefined, state: BigNumberish) {
-    const stateValue = Number(state);
-
-    if (stateValue === GameState.Uninitialized) {
-      setCardsForDealer([]);
-      setCardsForPlayer([]);
+  function updateCardsForDealer(game: string | undefined, cardsForDealer: BigNumberish[]) {
+    if (!game || game === address) {
+      setCardsForDealer(cardsForDealer.map((card) => Number(card)));
     }
+  }
 
-    setState(stateValue);
+  function updateCardsForPlayer(game: string | undefined, cardsForPlayer: BigNumberish[]) {
+    if (!game || game === address) {
+      setCardsForPlayer(cardsForPlayer.map((card) => Number(card)));
+    }
+  }
+
+  function updateState(game: string | undefined, state: BigNumberish) {
+    if (!game || game === address) {
+      const stateValue = Number(state);
+
+      if (stateValue === GameState.Uninitialized) {
+        setCardsForDealer([]);
+        setCardsForPlayer([]);
+      }
+
+      setState(stateValue);
+    }
   }
 
   return (
