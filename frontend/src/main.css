@@ -49,6 +49,17 @@ button:active {
   margin-left: 16px;
 }
 
+.card--concealed::after {
+  background: var(--greenish);
+  border-radius: 6px;
+  bottom: 6px;
+  content: "";
+  left: 6px;
+  position: absolute;
+  right: 6px;
+  top: 6px;
+}
+
 .card__figure--1 {
   align-items: center;
   display: flex;
@@ -142,6 +153,7 @@ input {
   --blue: #44b;
   --gray: #888;
   --green: #282;
+  --greenish: #8a8;
   --red: #c44;
   --white: #fff;
 }

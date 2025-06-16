@@ -48,30 +48,35 @@ function makeFigures(rank: string, suit: string) {
   }
 }
 
-const Card: FC<CardProps> = ({ card, cardIndex }) => {
-  const rank = deriveRank(card);
-  const [suit, suitColor] = deriveSuit(card, cardIndex);
+const Card: FC<CardProps> = ({ card, cardIndex, concealed }) => {
+  if (concealed) {
+    return <div className="card card--concealed" />;
+  } else {
+    const rank = deriveRank(card);
+    const [suit, suitColor] = deriveSuit(card, cardIndex);
 
-  return (
-    <div className={`card suit--${suitColor}`}>
-      <div className="card__index">
-        <span>{rank}</span>
-        <br />
-        <span>{suit}</span>
+    return (
+      <div className={`card suit--${suitColor}`}>
+        <div className="card__index">
+          <span>{rank}</span>
+          <br />
+          <span>{suit}</span>
+        </div>
+        <div className="card__index card__index--bottom">
+          <span>{rank}</span>
+          <br />
+          <span>{suit}</span>
+        </div>
+        {makeFigures(rank, suit)}
       </div>
-      <div className="card__index card__index--bottom">
-        <span>{rank}</span>
-        <br />
-        <span>{suit}</span>
-      </div>
-      {makeFigures(rank, suit)}
-    </div>
-  );
+    );
+  }
 };
 
 type CardProps = {
   card: number;
   cardIndex: number;
+  concealed: boolean;
 };
 
 export default Card;

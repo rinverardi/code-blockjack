@@ -56,7 +56,7 @@ const NaiveBlockjackForm = () => {
   }, [contract]);
 
   function displayActions() {
-    if (state == GameState.DealerWins || state == GameState.PlayerWins || state == GameState.Tie) {
+    if (isGameOver()) {
       return <button onClick={onClickDeleteGame}>Delete game</button>;
     } else if (state == GameState.Uninitialized) {
       return <button onClick={onClickCreateGame}>Create game</button>;
@@ -70,11 +70,11 @@ const NaiveBlockjackForm = () => {
     }
   }
 
-  function displayCards(cards: number[]) {
+  function displayCards(cards: number[], concealed: boolean) {
     return (
       <div className="cards">
         {cards.map((card, cardIndex) => (
-          <Card card={card} cardIndex={cardIndex} />
+          <Card card={card} cardIndex={cardIndex} concealed={cardIndex == 0 && concealed} />
         ))}
       </div>
     );
@@ -85,7 +85,7 @@ const NaiveBlockjackForm = () => {
       return (
         <>
           <h2>Dealer's Cards</h2>
-          {displayCards(cardsForDealer)}
+          {displayCards(cardsForDealer, !isGameOver())}
         </>
       );
     }
@@ -96,7 +96,7 @@ const NaiveBlockjackForm = () => {
       return (
         <>
           <h2>Player's Cards</h2>
-          {displayCards(cardsForPlayer)}
+          {displayCards(cardsForPlayer, false)}
         </>
       );
     }
@@ -116,6 +116,10 @@ const NaiveBlockjackForm = () => {
       case GameState.Waiting:
         return <p>It's your turn.</p>;
     }
+  }
+
+  function isGameOver() {
+    return state == GameState.DealerWins || state == GameState.PlayerWins || state == GameState.Tie;
   }
 
   async function onClickCreateGame() {
