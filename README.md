@@ -26,7 +26,7 @@ Blockjack is a simplified version of Blackjack without double downs, insurance, 
 
    If the player exceeds 21 points, they lose immediately.
 
-4. The dealer *must* draw additional cards while having less than 18 points.
+4. The dealer *must* draw additional cards while having less than 17 points.
 
    If the dealer exceeds 21 points, they lose immediately.
 
