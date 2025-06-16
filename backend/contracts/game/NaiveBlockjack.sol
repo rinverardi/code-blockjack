@@ -12,7 +12,9 @@ contract NaiveBlockjack {
 
     enum State {
         Uninitialized,
+        DealerBusts,
         DealerWins,
+        PlayerBusts,
         PlayerWins,
         Tie,
         Waiting
@@ -32,15 +34,19 @@ contract NaiveBlockjack {
 
         _dealPlayer(game, 2);
 
-        if (_rateCards(game.cardsForPlayer) == 21) {
-            _setStatus(game, State.PlayerWins);
+        uint8 pointsForPlayer = _rateCards(game.cardsForPlayer);
+
+        if (pointsForPlayer >= 21) {
+            _setStatus(game, pointsForPlayer == 21 ? State.PlayerWins : State.PlayerBusts);
             return;
         }
 
         _dealDealer(game, 2);
 
-        if (_rateCards(game.cardsForDealer) == 21) {
-            _setStatus(game, State.DealerWins);
+        uint8 pointsForDealer = _rateCards(game.cardsForDealer);
+
+        if (pointsForDealer >= 21) {
+            _setStatus(game, pointsForDealer == 21 ? State.DealerWins : State.DealerBusts);
             return;
         }
 
@@ -91,7 +97,7 @@ contract NaiveBlockjack {
         _dealPlayer(game, 1);
 
         if (_rateCards(game.cardsForPlayer) > 21) {
-            _setStatus(game, State.DealerWins);
+            _setStatus(game, State.PlayerBusts);
         }
     }
 
@@ -139,7 +145,7 @@ contract NaiveBlockjack {
         uint8 pointsForDealer = _rateCards(game.cardsForDealer);
 
         if (pointsForDealer > 21) {
-            _setStatus(game, State.PlayerWins);
+            _setStatus(game, State.DealerBusts);
             return;
         }
 

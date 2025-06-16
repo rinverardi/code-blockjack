@@ -111,11 +111,13 @@ const NaiveBlockjackForm = () => {
 
   function displayState() {
     switch (state) {
-      case GameState.DealerWins:
-        return <p>You lose.</p>;
-
+      case GameState.DealerBusts:
       case GameState.PlayerWins:
         return <p>You win.</p>;
+
+      case GameState.DealerWins:
+      case GameState.PlayerBusts:
+        return <p>You lose.</p>;
 
       case GameState.Tie:
         return <p>It's a tie.</p>;
@@ -126,7 +128,13 @@ const NaiveBlockjackForm = () => {
   }
 
   function isGameOver() {
-    return state == GameState.DealerWins || state == GameState.PlayerWins || state == GameState.Tie;
+    return (
+      state == GameState.DealerBusts ||
+      state == GameState.DealerWins ||
+      state == GameState.PlayerBusts ||
+      state == GameState.PlayerWins ||
+      state == GameState.Tie
+    );
   }
 
   async function onClickCreateGame() {
