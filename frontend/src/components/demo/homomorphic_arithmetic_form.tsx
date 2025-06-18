@@ -19,7 +19,7 @@ const HomomorphicArithmeticForm = () => {
   const provider = new BrowserProvider(window.ethereum);
 
   useEffect(() => {
-    async function init() {
+    (async () => {
       const signer = await provider.getSigner();
 
       setSigner(signer);
@@ -33,9 +33,7 @@ const HomomorphicArithmeticForm = () => {
       const contract = new Contract(deployment.address, deployment.abi, signer) as Contract & HomomorphicArithmetic;
 
       setContract(wrapContract(contract, "HomomorphicArithmetic"));
-    }
-
-    init();
+    })();
   }, []);
 
   async function getResult() {

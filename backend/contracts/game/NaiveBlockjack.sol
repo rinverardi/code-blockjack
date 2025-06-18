@@ -37,7 +37,7 @@ contract NaiveBlockjack {
         uint8 pointsForPlayer = _rateCards(game.cardsForPlayer);
 
         if (pointsForPlayer >= 21) {
-            _setStatus(game, pointsForPlayer == 21 ? State.PlayerWins : State.PlayerBusts);
+            _setState(game, pointsForPlayer == 21 ? State.PlayerWins : State.PlayerBusts);
             return;
         }
 
@@ -46,11 +46,11 @@ contract NaiveBlockjack {
         uint8 pointsForDealer = _rateCards(game.cardsForDealer);
 
         if (pointsForDealer >= 21) {
-            _setStatus(game, pointsForDealer == 21 ? State.DealerWins : State.DealerBusts);
+            _setState(game, pointsForDealer == 21 ? State.DealerWins : State.DealerBusts);
             return;
         }
 
-        _setStatus(game, State.Waiting);
+        _setState(game, State.Waiting);
     }
 
     function _dealDealer(Game storage game, uint8 count) private {
@@ -95,10 +95,7 @@ contract NaiveBlockjack {
         require(game.state == State.Waiting, "Illegal state");
 
         _dealPlayer(game, 1);
-
-        if (_rateCards(game.cardsForPlayer) > 21) {
-            _setStatus(game, State.PlayerBusts);
-        }
+        _setState(game, _rateCards(game.cardsForPlayer) > 21 ? State.PlayerBusts : State.Waiting);
     }
 
     function _randomCard(uint256 seed) private view returns (uint8) {
@@ -127,7 +124,7 @@ contract NaiveBlockjack {
         return total;
     }
 
-    function _setStatus(Game storage game, State state) private {
+    function _setState(Game storage game, State state) private {
         game.state = state;
 
         emit StateChanged(msg.sender, state);
@@ -145,18 +142,18 @@ contract NaiveBlockjack {
         uint8 pointsForDealer = _rateCards(game.cardsForDealer);
 
         if (pointsForDealer > 21) {
-            _setStatus(game, State.DealerBusts);
+            _setState(game, State.DealerBusts);
             return;
         }
 
         uint8 pointsForPlayer = _rateCards(game.cardsForPlayer);
 
         if (pointsForPlayer > pointsForDealer) {
-            _setStatus(game, State.PlayerWins);
+            _setState(game, State.PlayerWins);
         } else if (pointsForPlayer < pointsForDealer) {
-            _setStatus(game, State.DealerWins);
+            _setState(game, State.DealerWins);
         } else {
-            _setStatus(game, State.Tie);
+            _setState(game, State.Tie);
         }
     }
 }

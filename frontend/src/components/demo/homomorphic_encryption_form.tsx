@@ -17,7 +17,7 @@ const HomomorphicEncryptionForm = () => {
   const provider = new BrowserProvider(window.ethereum);
 
   useEffect(() => {
-    async function init() {
+    (async () => {
       const signer = await provider.getSigner();
 
       setSigner(signer);
@@ -31,9 +31,7 @@ const HomomorphicEncryptionForm = () => {
       const contract = new Contract(deployment.address, deployment.abi, signer) as Contract & HomomorphicEncryption;
 
       setContract(wrapContract(contract, "HomomorphicEncryption"));
-    }
-
-    init();
+    })();
   }, []);
 
   function onChangeConfidentialValue(event: React.ChangeEvent<HTMLInputElement>) {

@@ -1,22 +1,33 @@
 import type { NaiveBlockjack } from "@backend-types/contracts/game/NaiveBlockjack";
-import { BigNumberish, BrowserProvider, Contract } from "ethers";
+import { BrowserProvider, Contract } from "ethers";
+import { Overrides } from "ethers";
 import { useEffect, useState } from "react";
 
-import { GameState } from "../../lib/game/game_state";
 import { Progress, setProgress } from "../../lib/progress";
 import Card from "./card";
+
+enum State {
+  Uninitialized,
+  DealerBusts,
+  DealerWins,
+  PlayerBusts,
+  PlayerWins,
+  Tie,
+  Waiting,
+}
 
 const NaiveBlockjackForm = () => {
   const [address, setAddress] = useState<string | null>(null);
   const [cardsForDealer, setCardsForDealer] = useState<number[] | null>(null);
   const [cardsForPlayer, setCardsForPlayer] = useState<number[] | null>(null);
   const [contract, setContract] = useState<(Contract & NaiveBlockjack) | null>(null);
-  const [state, setState] = useState<GameState | null>(null);
+  const [state, setState] = useState<State | null>(null);
 
+  const overrides: Overrides = { gasLimit: 300_000 };
   const provider = new BrowserProvider(window.ethereum);
 
   useEffect(() => {
-    async function init() {
+    (async () => {
       const signer = await provider.getSigner();
       const signerAddress = await signer.getAddress();
 
@@ -39,13 +50,11 @@ const NaiveBlockjackForm = () => {
       updateState(undefined, game.state);
 
       setProgress(Progress.Idle);
-    }
-
-    init();
+    })();
   }, []);
 
   useEffect(() => {
-    async function init() {
+    (async () => {
       if (contract) {
         contract.on(contract.filters.CardsChangedForDealer, updateCardsForDealer);
         contract.on(contract.filters.CardsChangedForPlayer, updateCardsForPlayer);
@@ -57,17 +66,15 @@ const NaiveBlockjackForm = () => {
           contract.off(contract.filters.StateChanged, updateState);
         };
       }
-    }
-
-    init();
+    })();
   }, [contract]);
 
   function displayActions() {
     if (isGameOver()) {
       return <button onClick={onClickDeleteGame}>Delete game</button>;
-    } else if (state == GameState.Uninitialized) {
+    } else if (state == State.Uninitialized) {
       return <button onClick={onClickCreateGame}>Create game</button>;
-    } else if (state == GameState.Waiting) {
+    } else if (state == State.Waiting) {
       return (
         <>
           <button onClick={onClickHit}>Hit</button>
@@ -111,29 +118,29 @@ const NaiveBlockjackForm = () => {
 
   function displayState() {
     switch (state) {
-      case GameState.DealerBusts:
-      case GameState.PlayerWins:
+      case State.DealerBusts:
+      case State.PlayerWins:
         return <p>You win.</p>;
 
-      case GameState.DealerWins:
-      case GameState.PlayerBusts:
+      case State.DealerWins:
+      case State.PlayerBusts:
         return <p>You lose.</p>;
 
-      case GameState.Tie:
+      case State.Tie:
         return <p>It's a tie.</p>;
 
-      case GameState.Waiting:
-        return <p>It's your turn.</p>;
+      case State.Waiting:
+        return <p>Now it's your turn ...</p>;
     }
   }
 
   function isGameOver() {
     return (
-      state == GameState.DealerBusts ||
-      state == GameState.DealerWins ||
-      state == GameState.PlayerBusts ||
-      state == GameState.PlayerWins ||
-      state == GameState.Tie
+      state == State.DealerBusts ||
+      state == State.DealerWins ||
+      state == State.PlayerBusts ||
+      state == State.PlayerWins ||
+      state == State.Tie
     );
   }
 
@@ -141,7 +148,7 @@ const NaiveBlockjackForm = () => {
     setProgress(Progress.Sending);
 
     try {
-      const createGame = await contract!.createGame({ gasLimit: 500_000 });
+      const createGame = await contract!.createGame(overrides);
       await createGame.wait();
 
       setProgress(Progress.Receiving);
@@ -156,7 +163,7 @@ const NaiveBlockjackForm = () => {
     setProgress(Progress.Sending);
 
     try {
-      const deleteGame = await contract!.deleteGame();
+      const deleteGame = await contract!.deleteGame(overrides);
       await deleteGame.wait();
 
       setProgress(Progress.Receiving);
@@ -171,7 +178,7 @@ const NaiveBlockjackForm = () => {
     setProgress(Progress.Sending);
 
     try {
-      const hit = await contract!.hit({ gasLimit: 500_000 });
+      const hit = await contract!.hit(overrides);
       await hit.wait();
 
       setProgress(Progress.Receiving);
@@ -186,7 +193,7 @@ const NaiveBlockjackForm = () => {
     setProgress(Progress.Sending);
 
     try {
-      const stand = await contract!.stand({ gasLimit: 500_000 });
+      const stand = await contract!.stand(overrides);
       await stand.wait();
 
       setProgress(Progress.Receiving);
@@ -197,7 +204,7 @@ const NaiveBlockjackForm = () => {
     }
   }
 
-  function updateCardsForDealer(game: string | undefined, cardsForDealer: BigNumberish[]) {
+  function updateCardsForDealer(game: string | undefined, cardsForDealer: bigint[]) {
     if (!game || game === address) {
       setCardsForDealer(cardsForDealer.map((card) => Number(card)));
 
@@ -205,7 +212,7 @@ const NaiveBlockjackForm = () => {
     }
   }
 
-  function updateCardsForPlayer(game: string | undefined, cardsForPlayer: BigNumberish[]) {
+  function updateCardsForPlayer(game: string | undefined, cardsForPlayer: bigint[]) {
     if (!game || game === address) {
       setCardsForPlayer(cardsForPlayer.map((card) => Number(card)));
 
@@ -213,11 +220,11 @@ const NaiveBlockjackForm = () => {
     }
   }
 
-  function updateState(game: string | undefined, state: BigNumberish) {
+  function updateState(game: string | undefined, state: bigint) {
     if (!game || game === address) {
       const stateValue = Number(state);
 
-      if (stateValue === GameState.Uninitialized) {
+      if (stateValue === State.Uninitialized) {
         setCardsForDealer([]);
         setCardsForPlayer([]);
       }
