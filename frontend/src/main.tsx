@@ -28,6 +28,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         </div>
         <div id="progress">
           <div id="progress__indicator" />
+          <div id="progress__text" />
         </div>
       </WalletConnection>
     </WalletDetection>

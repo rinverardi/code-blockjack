@@ -38,6 +38,8 @@ const HomomorphicArithmeticForm = () => {
   }, []);
 
   async function getResult() {
+    setProgress(Progress.Receiving);
+
     const { publicKey, privateKey } = wrapInstance().generateKeypair();
 
     const signatureData = wrapInstance().createEIP712(publicKey, await contract!.getAddress());

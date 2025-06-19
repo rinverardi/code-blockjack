@@ -3,7 +3,7 @@ import { BrowserProvider, Contract } from "ethers";
 import { Overrides } from "ethers";
 import { useEffect, useState } from "react";
 
-import { Progress, setProgress } from "../../lib/progress";
+import { Progress, setProgress, setProgressUnlessIdle } from "../../lib/progress";
 import Card from "./card";
 
 enum State {
@@ -151,7 +151,7 @@ const NaiveBlockjackForm = () => {
       const createGame = await contract!.createGame(overrides);
       await createGame.wait();
 
-      setProgress(Progress.Receiving);
+      setProgressUnlessIdle(Progress.Receiving);
     } catch (error) {
       alert(error);
 
@@ -166,7 +166,7 @@ const NaiveBlockjackForm = () => {
       const deleteGame = await contract!.deleteGame(overrides);
       await deleteGame.wait();
 
-      setProgress(Progress.Receiving);
+      setProgressUnlessIdle(Progress.Receiving);
     } catch (error) {
       alert(error);
 
@@ -181,7 +181,7 @@ const NaiveBlockjackForm = () => {
       const hit = await contract!.hit(overrides);
       await hit.wait();
 
-      setProgress(Progress.Receiving);
+      setProgressUnlessIdle(Progress.Receiving);
     } catch (error) {
       alert(error);
 
@@ -196,7 +196,7 @@ const NaiveBlockjackForm = () => {
       const stand = await contract!.stand(overrides);
       await stand.wait();
 
-      setProgress(Progress.Receiving);
+      setProgressUnlessIdle(Progress.Receiving);
     } catch (error) {
       alert(error);
 

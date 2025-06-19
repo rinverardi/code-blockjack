@@ -79,7 +79,7 @@ const HomomorphicEncryptionForm = () => {
   }
 
   async function onClickGetConfidentialValue() {
-    setProgress(Progress.Sending);
+    setProgress(Progress.Receiving);
 
     try {
       const { publicKey, privateKey } = wrapInstance().generateKeypair();
