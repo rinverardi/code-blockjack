@@ -12,7 +12,9 @@ contract NaiveBlockjack {
 
     enum State {
         Uninitialized,
+        DealerBusts,
         DealerWins,
+        PlayerBusts,
         PlayerWins,
         Tie,
         Waiting
@@ -23,27 +25,28 @@ contract NaiveBlockjack {
     event StateChanged(address indexed game, State state);
 
     mapping(address => Game) _games;
+    uint256 _seed;
 
     function createGame() public {
         Game storage game = _games[msg.sender];
 
         require(game.state == State.Uninitialized, "Illegal state");
 
-        while (game.deck.length < 8) {
-            game.deck.push(_randomCard(game.deck.length));
-        }
-
         _dealPlayer(game, 2);
 
-        if (_rateCards(game.cardsForPlayer) == 21) {
-            _setStatus(game, State.PlayerWins);
+        uint8 pointsForPlayer = _rateCards(game.cardsForPlayer);
+
+        if (pointsForPlayer >= 21) {
+            _setStatus(game, pointsForPlayer == 21 ? State.PlayerWins : State.PlayerBusts);
             return;
         }
 
         _dealDealer(game, 2);
 
-        if (_rateCards(game.cardsForDealer) == 21) {
-            _setStatus(game, State.DealerWins);
+        uint8 pointsForDealer = _rateCards(game.cardsForDealer);
+
+        if (pointsForDealer >= 21) {
+            _setStatus(game, pointsForDealer == 21 ? State.DealerWins : State.DealerBusts);
             return;
         }
 
@@ -52,9 +55,12 @@ contract NaiveBlockjack {
 
     function _dealDealer(Game storage game, uint8 count) private {
         for (; count > 0; count--) {
-            game.cardsForDealer.push(game.deck[game.deck.length - 1]);
-
-            game.deck.pop();
+            if (game.deck.length > 0) {
+                game.cardsForDealer.push(game.deck[game.deck.length - 1]);
+                game.deck.pop();
+            } else {
+                game.cardsForDealer.push(_randomCard(_seed++));
+            }
         }
 
         emit CardsChangedForDealer(msg.sender, game.cardsForDealer);
@@ -62,9 +68,12 @@ contract NaiveBlockjack {
 
     function _dealPlayer(Game storage game, uint8 count) private {
         for (; count > 0; count--) {
-            game.cardsForPlayer.push(game.deck[game.deck.length - 1]);
-
-            game.deck.pop();
+            if (game.deck.length > 0) {
+                game.cardsForPlayer.push(game.deck[game.deck.length - 1]);
+                game.deck.pop();
+            } else {
+                game.cardsForPlayer.push(_randomCard(_seed++));
+            }
         }
 
         emit CardsChangedForPlayer(msg.sender, game.cardsForPlayer);
@@ -88,7 +97,7 @@ contract NaiveBlockjack {
         _dealPlayer(game, 1);
 
         if (_rateCards(game.cardsForPlayer) > 21) {
-            _setStatus(game, State.DealerWins);
+            _setStatus(game, State.PlayerBusts);
         }
     }
 
@@ -133,18 +142,18 @@ contract NaiveBlockjack {
             _dealDealer(game, 1);
         }
 
-        uint8 scoreForDealer = _rateCards(game.cardsForDealer);
+        uint8 pointsForDealer = _rateCards(game.cardsForDealer);
 
-        if (scoreForDealer > 21) {
-            _setStatus(game, State.PlayerWins);
+        if (pointsForDealer > 21) {
+            _setStatus(game, State.DealerBusts);
             return;
         }
 
-        uint8 scoreForPlayer = _rateCards(game.cardsForPlayer);
+        uint8 pointsForPlayer = _rateCards(game.cardsForPlayer);
 
-        if (scoreForPlayer > scoreForDealer) {
+        if (pointsForPlayer > pointsForDealer) {
             _setStatus(game, State.PlayerWins);
-        } else if (scoreForPlayer < scoreForDealer) {
+        } else if (pointsForPlayer < pointsForDealer) {
             _setStatus(game, State.DealerWins);
         } else {
             _setStatus(game, State.Tie);

@@ -2,7 +2,6 @@ import type { NaiveBlockjack } from "@backend-types/contracts/game/NaiveBlockjac
 import { BigNumberish, BrowserProvider, Contract } from "ethers";
 import { useEffect, useState } from "react";
 
-import { wrapContract } from "../../lib/chaos";
 import { GameState } from "../../lib/game/game_state";
 import { Progress, setProgress } from "../../lib/progress";
 import Card from "./card";
@@ -31,7 +30,7 @@ const NaiveBlockjackForm = () => {
 
       const contract = new Contract(deployment.address, deployment.abi, signer) as Contract & NaiveBlockjack;
 
-      setContract(wrapContract(contract, "NaiveBlockjack"));
+      setContract(contract);
 
       const game = await contract.getGame();
 
@@ -112,11 +111,13 @@ const NaiveBlockjackForm = () => {
 
   function displayState() {
     switch (state) {
-      case GameState.DealerWins:
-        return <p>You lose.</p>;
-
+      case GameState.DealerBusts:
       case GameState.PlayerWins:
         return <p>You win.</p>;
+
+      case GameState.DealerWins:
+      case GameState.PlayerBusts:
+        return <p>You lose.</p>;
 
       case GameState.Tie:
         return <p>It's a tie.</p>;
@@ -127,14 +128,20 @@ const NaiveBlockjackForm = () => {
   }
 
   function isGameOver() {
-    return state == GameState.DealerWins || state == GameState.PlayerWins || state == GameState.Tie;
+    return (
+      state == GameState.DealerBusts ||
+      state == GameState.DealerWins ||
+      state == GameState.PlayerBusts ||
+      state == GameState.PlayerWins ||
+      state == GameState.Tie
+    );
   }
 
   async function onClickCreateGame() {
     setProgress(Progress.Sending);
 
     try {
-      const createGame = await contract!.createGame({ gasLimit: 250_000 });
+      const createGame = await contract!.createGame({ gasLimit: 500_000 });
       await createGame.wait();
 
       setProgress(Progress.Receiving);
@@ -164,7 +171,7 @@ const NaiveBlockjackForm = () => {
     setProgress(Progress.Sending);
 
     try {
-      const hit = await contract!.hit();
+      const hit = await contract!.hit({ gasLimit: 500_000 });
       await hit.wait();
 
       setProgress(Progress.Receiving);
@@ -179,7 +186,7 @@ const NaiveBlockjackForm = () => {
     setProgress(Progress.Sending);
 
     try {
-      const stand = await contract!.stand();
+      const stand = await contract!.stand({ gasLimit: 500_000 });
       await stand.wait();
 
       setProgress(Progress.Receiving);
