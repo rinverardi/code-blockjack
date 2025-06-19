@@ -3,7 +3,7 @@ import { BrowserProvider, Contract, Signer } from "ethers";
 import { useEffect, useState } from "react";
 
 import { wrapContract, wrapInstance } from "../../lib/chaos";
-import { toggleProgress } from "../../lib/progress";
+import { Progress, setProgress } from "../../lib/progress";
 
 const HomomorphicEncryptionForm = () => {
   const [contract, setContract] = useState<(Contract & HomomorphicEncryption) | null>(null);
@@ -31,6 +31,7 @@ const HomomorphicEncryptionForm = () => {
       const contract = new Contract(deployment.address, deployment.abi, signer) as Contract & HomomorphicEncryption;
 
       setContract(wrapContract(contract, "HomomorphicEncryption"));
+      setProgress(Progress.Idle);
     })();
   }, []);
 
@@ -51,7 +52,7 @@ const HomomorphicEncryptionForm = () => {
   }
 
   async function onClickDecryptValue() {
-    toggleProgress(true);
+    setProgress(Progress.Sending);
 
     try {
       const decryptValue = await contract!.decryptValue();
@@ -60,11 +61,11 @@ const HomomorphicEncryptionForm = () => {
       alert(error);
     }
 
-    toggleProgress(false);
+    setProgress(Progress.Idle);
   }
 
   async function onClickGetHandle() {
-    toggleProgress(true);
+    setProgress(Progress.Sending);
 
     try {
       const handle = await contract!.getHandle();
@@ -74,11 +75,11 @@ const HomomorphicEncryptionForm = () => {
       alert(error);
     }
 
-    toggleProgress(false);
+    setProgress(Progress.Idle);
   }
 
   async function onClickGetConfidentialValue() {
-    toggleProgress(true);
+    setProgress(Progress.Sending);
 
     try {
       const { publicKey, privateKey } = wrapInstance().generateKeypair();
@@ -105,11 +106,11 @@ const HomomorphicEncryptionForm = () => {
       alert(error);
     }
 
-    toggleProgress(false);
+    setProgress(Progress.Idle);
   }
 
   async function onClickGetTransparentValue() {
-    toggleProgress(true);
+    setProgress(Progress.Sending);
 
     try {
       const value = await contract!.getValue();
@@ -119,11 +120,11 @@ const HomomorphicEncryptionForm = () => {
       alert(error);
     }
 
-    toggleProgress(false);
+    setProgress(Progress.Idle);
   }
 
   async function onClickSetConfidentialValue() {
-    toggleProgress(true);
+    setProgress(Progress.Sending);
 
     try {
       const input = await wrapInstance()
@@ -137,11 +138,11 @@ const HomomorphicEncryptionForm = () => {
       alert(error);
     }
 
-    toggleProgress(false);
+    setProgress(Progress.Idle);
   }
 
   async function onClickSetTransparentValue() {
-    toggleProgress(true);
+    setProgress(Progress.Sending);
 
     try {
       const encryptValue = await contract!.encryptValue(transparentValue);
@@ -150,7 +151,7 @@ const HomomorphicEncryptionForm = () => {
       alert(error);
     }
 
-    toggleProgress(false);
+    setProgress(Progress.Idle);
   }
 
   function showHandle(handle: bigint | null): string | undefined {

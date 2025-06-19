@@ -3,7 +3,7 @@ import { BrowserProvider, Contract, Signer } from "ethers";
 import { useEffect, useState } from "react";
 
 import { wrapContract, wrapInstance } from "../../lib/chaos";
-import { toggleProgress } from "../../lib/progress";
+import { Progress, setProgress } from "../../lib/progress";
 
 const HomomorphicArithmeticForm = () => {
   const [addParam0, setAddParam0] = useState(42n);
@@ -33,6 +33,7 @@ const HomomorphicArithmeticForm = () => {
       const contract = new Contract(deployment.address, deployment.abi, signer) as Contract & HomomorphicArithmetic;
 
       setContract(wrapContract(contract, "HomomorphicArithmetic"));
+      setProgress(Progress.Idle);
     })();
   }, []);
 
@@ -90,7 +91,7 @@ const HomomorphicArithmeticForm = () => {
   }
 
   async function onClickAddValues() {
-    toggleProgress(true);
+    setProgress(Progress.Sending);
 
     try {
       const input = await wrapInstance()
@@ -107,11 +108,11 @@ const HomomorphicArithmeticForm = () => {
       alert(error);
     }
 
-    toggleProgress(false);
+    setProgress(Progress.Idle);
   }
 
   async function onClickMultiplyValues() {
-    toggleProgress(true);
+    setProgress(Progress.Sending);
 
     try {
       const input = await wrapInstance()
@@ -128,11 +129,11 @@ const HomomorphicArithmeticForm = () => {
       alert(error);
     }
 
-    toggleProgress(false);
+    setProgress(Progress.Idle);
   }
 
   async function onClickRandomValue() {
-    toggleProgress(true);
+    setProgress(Progress.Sending);
 
     try {
       const randomValue = await contract!.randomValue();
@@ -143,7 +144,7 @@ const HomomorphicArithmeticForm = () => {
       alert(error);
     }
 
-    toggleProgress(false);
+    setProgress(Progress.Idle);
   }
 
   return (
