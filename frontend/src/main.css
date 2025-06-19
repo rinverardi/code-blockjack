@@ -55,15 +55,34 @@ button:active {
   margin-left: 16px;
 }
 
-.card--concealed::after {
-  background: var(--greenish);
+.card--revealable {
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+
+.card--revealable:hover {
+  transform: translateY(-8px);
+}
+
+.card__background {
+  background: var(--accentLight);
   border-radius: 6px;
   bottom: 6px;
-  content: "";
   left: 6px;
   position: absolute;
   right: 6px;
   top: 6px;
+}
+
+.card__icon {
+  background: url("/images/revealable.min.svg");
+  background-size: cover;
+  left: 50%;
+  margin: -12px 0 0 -12px;
+  height: 24px;
+  position: absolute;
+  top: 50%;
+  width: 24px;
 }
 
 .card__figure--1 {

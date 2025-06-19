@@ -48,9 +48,13 @@ function makeFigures(rank: string, suit: string) {
   }
 }
 
-const Card: FC<CardProps> = ({ card, cardIndex, concealed }) => {
+const Card: FC<CardProps> = ({ card, cardIndex, concealed, onClick, revealable }) => {
   if (concealed) {
-    return <div className="card card--concealed" />;
+    return (
+      <div className={`card ${revealable && "card--revealable"}`} onClick={onClick}>
+        <div className="card__background">{revealable && <div className="card__icon" />}</div>
+      </div>
+    );
   } else {
     const rank = deriveRank(card);
     const [suit, suitColor] = deriveSuit(card, cardIndex);
@@ -77,6 +81,8 @@ type CardProps = {
   card: number;
   cardIndex: number;
   concealed: boolean;
+  onClick?: () => void;
+  revealable: boolean;
 };
 
 export default Card;

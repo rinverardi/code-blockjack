@@ -84,22 +84,16 @@ const NaiveBlockjackForm = () => {
     }
   }
 
-  function displayCards(cards: number[], concealed: boolean) {
-    return (
-      <div className="cards">
-        {cards.map((card, cardIndex) => (
-          <Card card={card} cardIndex={cardIndex} concealed={cardIndex == 0 && concealed} />
-        ))}
-      </div>
-    );
-  }
-
   function displayCardsForDealer() {
     if (cardsForDealer?.length) {
       return (
         <>
           <h2>Dealer's Cards</h2>
-          {displayCards(cardsForDealer, !isGameOver())}
+          <div className="cards">
+            {cardsForDealer.map((card, cardIndex) => (
+              <Card card={card} cardIndex={cardIndex} concealed={cardIndex == 0 && !isGameOver()} revealable={false} />
+            ))}
+          </div>
         </>
       );
     }
@@ -110,7 +104,11 @@ const NaiveBlockjackForm = () => {
       return (
         <>
           <h2>Player's Cards</h2>
-          {displayCards(cardsForPlayer, false)}
+          <div className="cards">
+            {cardsForPlayer.map((card, cardIndex) => (
+              <Card card={card} cardIndex={cardIndex} concealed={false} revealable={false} />
+            ))}
+          </div>
         </>
       );
     }
