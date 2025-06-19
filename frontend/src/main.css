@@ -5,6 +5,12 @@
   outline: none;
 }
 
+a,
+a:visited {
+  color: var(--blue);
+  text-decoration: none;
+}
+
 body {
   background: var(--white);
   color: var(--black);
@@ -190,6 +196,15 @@ input {
 
 .suit--red {
   color: var(--red);
+}
+
+ul {
+  list-style-position: inside;
+  padding: 0;
+}
+
+ul li {
+  margin: 4px 0;
 }
 
 @font-face {
