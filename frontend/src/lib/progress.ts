@@ -8,6 +8,7 @@ export function clearProgress() {}
 
 export function setProgress(progress: Progress) {
   const element = document.getElementById("progress")!;
+  const elementText = document.getElementById("progress__text")!;
 
   switch (progress) {
     case Progress.Idle:
@@ -15,15 +16,21 @@ export function setProgress(progress: Progress) {
       break;
 
     case Progress.Receiving:
-      console.log("Receiving ...");
-
       element.style.display = "block";
+      elementText.textContent = "Receiving ...";
       break;
 
     case Progress.Sending:
-      console.log("Sending ...");
-
       element.style.display = "block";
+      elementText.textContent = "Sending ...";
       break;
+  }
+}
+
+export function setProgressUnlessIdle(progress: Progress) {
+  const element = document.getElementById("progress")!;
+
+  if (element.style.display == "block") {
+    setProgress(progress);
   }
 }

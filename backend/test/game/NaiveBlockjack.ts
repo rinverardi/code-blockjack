@@ -92,6 +92,7 @@ describe("Naive Blockjack", function () {
     const createGame = await bobsContract.createGame();
     await createGame.wait();
 
+    await expect(createGame).to.emit(bobsContract, "CardsChangedForPlayer").withArgs(bob, [7, 8]);
     await expect(createGame).to.emit(bobsContract, "CardsChangedForDealer").withArgs(bob, [A, A]);
     await expect(createGame).to.emit(bobsContract, "StateChanged").withArgs(bob, State.DealerBusts);
 
@@ -110,6 +111,10 @@ describe("Naive Blockjack", function () {
 
     const createGame = await bobsContract.createGame();
     await createGame.wait();
+
+    await expect(createGame).to.emit(bobsContract, "CardsChangedForPlayer").withArgs(bob, [7, 8]);
+    await expect(createGame).to.emit(bobsContract, "CardsChangedForDealer").withArgs(bob, [7, 8]);
+    await expect(createGame).to.emit(bobsContract, "StateChanged").withArgs(bob, State.Waiting);
 
     const stand = await bobsContract.stand();
     await stand.wait();
@@ -132,6 +137,10 @@ describe("Naive Blockjack", function () {
 
     const createGame = await bobsContract.createGame();
     await createGame.wait();
+
+    await expect(createGame).to.emit(bobsContract, "CardsChangedForPlayer").withArgs(bob, [8, 9]);
+    await expect(createGame).to.emit(bobsContract, "CardsChangedForDealer").withArgs(bob, [J, Q]);
+    await expect(createGame).to.emit(bobsContract, "StateChanged").withArgs(bob, State.Waiting);
 
     const stand = await bobsContract.stand();
     await stand.wait();
@@ -174,6 +183,10 @@ describe("Naive Blockjack", function () {
     const createGame = await bobsContract.createGame();
     await createGame.wait();
 
+    await expect(createGame).to.emit(bobsContract, "CardsChangedForPlayer").withArgs(bob, [J, Q]);
+    await expect(createGame).to.emit(bobsContract, "CardsChangedForDealer").withArgs(bob, [6, 7]);
+    await expect(createGame).to.emit(bobsContract, "StateChanged").withArgs(bob, State.Waiting);
+
     const stand = await bobsContract.stand();
     await stand.wait();
 
@@ -195,6 +208,10 @@ describe("Naive Blockjack", function () {
 
     const createGame = await bobsContract.createGame();
     await createGame.wait();
+
+    await expect(createGame).to.emit(bobsContract, "CardsChangedForPlayer").withArgs(bob, [8, 9]);
+    await expect(createGame).to.emit(bobsContract, "CardsChangedForDealer").withArgs(bob, [8, 9]);
+    await expect(createGame).to.emit(bobsContract, "StateChanged").withArgs(bob, State.Waiting);
 
     const stand = await bobsContract.stand();
     await stand.wait();
@@ -235,6 +252,10 @@ describe("Naive Blockjack", function () {
     const createGame = await bobsContract.createGame();
     await createGame.wait();
 
+    await expect(createGame).to.emit(bobsContract, "CardsChangedForPlayer").withArgs(bob, [7, 8]);
+    await expect(createGame).to.emit(bobsContract, "CardsChangedForDealer").withArgs(bob, [7, 8]);
+    await expect(createGame).to.emit(bobsContract, "StateChanged").withArgs(bob, State.Waiting);
+
     const hit = await bobsContract.hit();
     await hit.wait();
 
@@ -256,6 +277,10 @@ describe("Naive Blockjack", function () {
 
     const createGame = await bobsContract.createGame();
     await createGame.wait();
+
+    await expect(createGame).to.emit(bobsContract, "CardsChangedForPlayer").withArgs(bob, [J, Q]);
+    await expect(createGame).to.emit(bobsContract, "CardsChangedForDealer").withArgs(bob, [8, 9]);
+    await expect(createGame).to.emit(bobsContract, "StateChanged").withArgs(bob, State.Waiting);
 
     const stand = await bobsContract.stand();
     await stand.wait();
@@ -297,8 +322,15 @@ describe("Naive Blockjack", function () {
     const createGame = await bobsContract.createGame();
     await createGame.wait();
 
+    await expect(createGame).to.emit(bobsContract, "CardsChangedForPlayer").withArgs(bob, [6, 7]);
+    await expect(createGame).to.emit(bobsContract, "CardsChangedForDealer").withArgs(bob, [J, Q]);
+    await expect(createGame).to.emit(bobsContract, "StateChanged").withArgs(bob, State.Waiting);
+
     const hit = await bobsContract.hit();
     await hit.wait();
+
+    await expect(hit).to.emit(bobsContract, "CardsChangedForPlayer").withArgs(bob, [6, 7, 8]);
+    await expect(hit).to.emit(bobsContract, "StateChanged").withArgs(bob, State.Waiting);
 
     const stand = await bobsContract.stand();
     await stand.wait();

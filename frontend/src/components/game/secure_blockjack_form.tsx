@@ -1,46 +1,53 @@
-import type { NaiveBlockjack } from "@backend-types/contracts/game/NaiveBlockjack";
-import { BrowserProvider, Contract } from "ethers";
-import { Overrides } from "ethers";
+import type { SecureBlockjack } from "@backend-types/contracts/game/SecureBlockjack";
+import { BrowserProvider, Contract, Overrides, Signer } from "ethers";
 import { useEffect, useState } from "react";
 
+import { getInstance } from "../../fhevmjs";
 import { Progress, setProgress, setProgressUnlessIdle } from "../../lib/progress";
 import Card from "./card";
 
 enum State {
   Uninitialized,
+  Checking,
   DealerBusts,
   DealerWins,
   PlayerBusts,
   PlayerWins,
   Tie,
-  Waiting,
+  WaitingForDealer,
+  WaitingForPlayer,
 }
 
-const NaiveBlockjackForm = () => {
-  const [address, setAddress] = useState<string>();
-  const [cardsForDealer, setCardsForDealer] = useState<number[]>();
-  const [cardsForPlayer, setCardsForPlayer] = useState<number[]>();
-  const [contract, setContract] = useState<Contract & NaiveBlockjack>();
+const SecureBlockjackForm = () => {
+  const [cardsForDealer, setCardsForDealer] = useState<bigint[]>();
+  const [cardsForPlayer, setCardsForPlayer] = useState<bigint[]>();
+  const [contract, setContract] = useState<Contract & SecureBlockjack>();
+  const [contractAddress, setContractAddress] = useState<string>();
+  const [signer, setSigner] = useState<Signer>();
+  const [signerAddress, setSignerAddress] = useState<string>();
   const [state, setState] = useState<State>();
+  const [values, setValues] = useState<Map<bigint, number>>(new Map());
 
-  const overrides: Overrides = { gasLimit: 300_000 };
+  const overrides: Overrides = { gasLimit: 2_000_000 };
   const provider = new BrowserProvider(window.ethereum);
 
   useEffect(() => {
     (async () => {
       const signer = await provider.getSigner();
 
-      setAddress(await signer.getAddress());
+      setSigner(signer);
+      setSignerAddress(await signer.getAddress());
 
       const deployment = await import(
         import.meta.env.MOCKED
-          ? "@backend-deployments/localhost/NaiveBlockjack.json"
-          : "@backend-deployments/sepolia/NaiveBlockjack.json"
+          ? "@backend-deployments/localhost/SecureBlockjack.json"
+          : "@backend-deployments/sepolia/SecureBlockjack.json"
       );
 
-      const contract = new Contract(deployment.address, deployment.abi, signer) as Contract & NaiveBlockjack;
+      const contract = new Contract(deployment.address, deployment.abi, signer) as Contract & SecureBlockjack;
 
       setContract(contract);
+      setContractAddress(await contract.getAddress());
 
       const game = await contract.getGame();
 
@@ -68,12 +75,51 @@ const NaiveBlockjackForm = () => {
     })();
   }, [contract]);
 
+  async function decryptCard(card: bigint) {
+    setProgress(Progress.Receiving);
+
+    try {
+      const { publicKey, privateKey } = getInstance().generateKeypair();
+
+      const signatureData = getInstance().createEIP712(publicKey, await contract!.getAddress());
+
+      const signature = await signer!.signTypedData(
+        signatureData.domain,
+        { Reencrypt: signatureData.types.Reencrypt },
+        signatureData.message,
+      );
+
+      const value = await getInstance().reencrypt(
+        card,
+        privateKey,
+        publicKey,
+        signature.replace("0x", ""),
+        contractAddress!,
+        signerAddress!,
+      );
+
+      setValues((oldValues) => {
+        const newValues = new Map(oldValues);
+
+        newValues.set(card, Number(value));
+
+        return newValues;
+      });
+    } catch (error) {
+      alert(error);
+    }
+
+    setProgress(Progress.Idle);
+  }
+
   function displayActions() {
     if (isGameOver()) {
       return <button onClick={onClickDeleteGame}>Delete game</button>;
     } else if (state == State.Uninitialized) {
       return <button onClick={onClickCreateGame}>Create game</button>;
-    } else if (state == State.Waiting) {
+    } else if (state == State.WaitingForDealer) {
+      return <button onClick={onClickContinueGame}>Continue game</button>;
+    } else if (state == State.WaitingForPlayer) {
       return (
         <>
           <button onClick={onClickHit}>Hit</button>
@@ -83,16 +129,34 @@ const NaiveBlockjackForm = () => {
     }
   }
 
+  function displayCard(card: bigint, cardIndex: number, revealable: boolean) {
+    const value = values && values.get(card);
+
+    if (value) {
+      return <Card card={value} cardIndex={cardIndex} concealed={false} revealable={false} />;
+    } else {
+      return (
+        <Card
+          card={0}
+          cardIndex={cardIndex}
+          concealed={true}
+          onClick={revealable ? () => onClickReveal(card) : undefined}
+          revealable={revealable}
+        />
+      );
+    }
+  }
+
   function displayCardsForDealer() {
     if (cardsForDealer?.length) {
+      const cards = cardsForDealer.map((card, cardIndex) =>
+        displayCard(card, cardIndex, cardIndex > 0 || isGameOver()),
+      );
+
       return (
         <>
           <h2>Dealer's Cards</h2>
-          <div className="cards">
-            {cardsForDealer.map((card, cardIndex) => (
-              <Card card={card} cardIndex={cardIndex} concealed={cardIndex == 0 && !isGameOver()} revealable={false} />
-            ))}
-          </div>
+          <div className="cards">{cards}</div>
         </>
       );
     }
@@ -100,14 +164,12 @@ const NaiveBlockjackForm = () => {
 
   function displayCardsForPlayer() {
     if (cardsForPlayer?.length) {
+      const cards = cardsForPlayer.map((card, cardIndex) => displayCard(card, cardIndex, true));
+
       return (
         <>
           <h2>Player's Cards</h2>
-          <div className="cards">
-            {cardsForPlayer.map((card, cardIndex) => (
-              <Card card={card} cardIndex={cardIndex} concealed={false} revealable={false} />
-            ))}
-          </div>
+          <div className="cards">{cards}</div>
         </>
       );
     }
@@ -115,6 +177,9 @@ const NaiveBlockjackForm = () => {
 
   function displayState() {
     switch (state) {
+      case State.Checking:
+        return <p>Checking ...</p>;
+
       case State.DealerBusts:
       case State.PlayerWins:
         return <p>You win.</p>;
@@ -126,7 +191,10 @@ const NaiveBlockjackForm = () => {
       case State.Tie:
         return <p>It's a tie.</p>;
 
-      case State.Waiting:
+      case State.WaitingForDealer:
+        return <p>Now it's the dealers turn ...</p>;
+
+      case State.WaitingForPlayer:
         return <p>Now it's your turn ...</p>;
     }
   }
@@ -139,6 +207,21 @@ const NaiveBlockjackForm = () => {
       state == State.PlayerWins ||
       state == State.Tie
     );
+  }
+
+  async function onClickContinueGame() {
+    setProgress(Progress.Sending);
+
+    try {
+      const createGame = await contract!.continueGame(overrides);
+      await createGame.wait();
+
+      setProgressUnlessIdle(Progress.Receiving);
+    } catch (error) {
+      alert(error);
+
+      setProgress(Progress.Idle);
+    }
   }
 
   async function onClickCreateGame() {
@@ -175,8 +258,8 @@ const NaiveBlockjackForm = () => {
     setProgress(Progress.Sending);
 
     try {
-      const hit = await contract!.hit(overrides);
-      await hit.wait();
+      const hitAsPlayer = await contract!.hitAsPlayer(overrides);
+      await hitAsPlayer.wait();
 
       setProgressUnlessIdle(Progress.Receiving);
     } catch (error) {
@@ -184,6 +267,10 @@ const NaiveBlockjackForm = () => {
 
       setProgress(Progress.Idle);
     }
+  }
+
+  async function onClickReveal(card: bigint) {
+    decryptCard(card);
   }
 
   async function onClickStand() {
@@ -202,23 +289,23 @@ const NaiveBlockjackForm = () => {
   }
 
   function updateCardsForDealer(game: string | undefined, cardsForDealer: bigint[]) {
-    if (!game || game === address) {
-      setCardsForDealer(cardsForDealer.map((card) => Number(card)));
+    if (!game || game === signerAddress) {
+      setCardsForDealer(cardsForDealer);
 
       setProgress(Progress.Idle);
     }
   }
 
   function updateCardsForPlayer(game: string | undefined, cardsForPlayer: bigint[]) {
-    if (!game || game === address) {
-      setCardsForPlayer(cardsForPlayer.map((card) => Number(card)));
+    if (!game || game === signerAddress) {
+      setCardsForPlayer(cardsForPlayer);
 
       setProgress(Progress.Idle);
     }
   }
 
   function updateState(game: string | undefined, state: bigint) {
-    if (!game || game === address) {
+    if (!game || game === signerAddress) {
       const stateValue = Number(state);
 
       if (stateValue === State.Uninitialized) {
@@ -234,7 +321,7 @@ const NaiveBlockjackForm = () => {
 
   return (
     <>
-      <h1>Naive Blockjack</h1>
+      <h1>Secure Blockjack</h1>
       {displayState()}
       {displayCardsForDealer()}
       {displayCardsForPlayer()}
@@ -243,4 +330,4 @@ const NaiveBlockjackForm = () => {
   );
 };
 
-export default NaiveBlockjackForm;
+export default SecureBlockjackForm;

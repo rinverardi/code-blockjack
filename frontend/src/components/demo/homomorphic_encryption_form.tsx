@@ -3,21 +3,21 @@ import { BrowserProvider, Contract, Signer } from "ethers";
 import { useEffect, useState } from "react";
 
 import { wrapContract, wrapInstance } from "../../lib/chaos";
-import { toggleProgress } from "../../lib/progress";
+import { Progress, setProgress } from "../../lib/progress";
 
 const HomomorphicEncryptionForm = () => {
-  const [contract, setContract] = useState<(Contract & HomomorphicEncryption) | null>(null);
-  const [confidentialResult, setConfidentialResult] = useState<bigint | null>(null);
+  const [contract, setContract] = useState<Contract & HomomorphicEncryption>();
+  const [confidentialResult, setConfidentialResult] = useState<bigint>();
   const [confidentialValue, setConfidentialValue] = useState(42n);
-  const [handle, setHandle] = useState<bigint | null>(null);
-  const [signer, setSigner] = useState<Signer | null>(null);
-  const [transparentResult, setTransparentResult] = useState<bigint | null>(null);
+  const [handle, setHandle] = useState<bigint>();
+  const [signer, setSigner] = useState<Signer>();
+  const [transparentResult, setTransparentResult] = useState<bigint>();
   const [transparentValue, setTransparentValue] = useState(42n);
 
   const provider = new BrowserProvider(window.ethereum);
 
   useEffect(() => {
-    async function init() {
+    (async () => {
       const signer = await provider.getSigner();
 
       setSigner(signer);
@@ -31,9 +31,8 @@ const HomomorphicEncryptionForm = () => {
       const contract = new Contract(deployment.address, deployment.abi, signer) as Contract & HomomorphicEncryption;
 
       setContract(wrapContract(contract, "HomomorphicEncryption"));
-    }
-
-    init();
+      setProgress(Progress.Idle);
+    })();
   }, []);
 
   function onChangeConfidentialValue(event: React.ChangeEvent<HTMLInputElement>) {
@@ -53,7 +52,7 @@ const HomomorphicEncryptionForm = () => {
   }
 
   async function onClickDecryptValue() {
-    toggleProgress(true);
+    setProgress(Progress.Sending);
 
     try {
       const decryptValue = await contract!.decryptValue();
@@ -62,11 +61,11 @@ const HomomorphicEncryptionForm = () => {
       alert(error);
     }
 
-    toggleProgress(false);
+    setProgress(Progress.Idle);
   }
 
   async function onClickGetHandle() {
-    toggleProgress(true);
+    setProgress(Progress.Sending);
 
     try {
       const handle = await contract!.getHandle();
@@ -76,11 +75,11 @@ const HomomorphicEncryptionForm = () => {
       alert(error);
     }
 
-    toggleProgress(false);
+    setProgress(Progress.Idle);
   }
 
   async function onClickGetConfidentialValue() {
-    toggleProgress(true);
+    setProgress(Progress.Receiving);
 
     try {
       const { publicKey, privateKey } = wrapInstance().generateKeypair();
@@ -107,11 +106,11 @@ const HomomorphicEncryptionForm = () => {
       alert(error);
     }
 
-    toggleProgress(false);
+    setProgress(Progress.Idle);
   }
 
   async function onClickGetTransparentValue() {
-    toggleProgress(true);
+    setProgress(Progress.Sending);
 
     try {
       const value = await contract!.getValue();
@@ -121,11 +120,11 @@ const HomomorphicEncryptionForm = () => {
       alert(error);
     }
 
-    toggleProgress(false);
+    setProgress(Progress.Idle);
   }
 
   async function onClickSetConfidentialValue() {
-    toggleProgress(true);
+    setProgress(Progress.Sending);
 
     try {
       const input = await wrapInstance()
@@ -139,11 +138,11 @@ const HomomorphicEncryptionForm = () => {
       alert(error);
     }
 
-    toggleProgress(false);
+    setProgress(Progress.Idle);
   }
 
   async function onClickSetTransparentValue() {
-    toggleProgress(true);
+    setProgress(Progress.Sending);
 
     try {
       const encryptValue = await contract!.encryptValue(transparentValue);
@@ -152,11 +151,11 @@ const HomomorphicEncryptionForm = () => {
       alert(error);
     }
 
-    toggleProgress(false);
+    setProgress(Progress.Idle);
   }
 
-  function showHandle(handle: bigint | null): string | undefined {
-    if (handle !== null) {
+  function showHandle(handle: bigint | undefined): string | undefined {
+    if (handle) {
       const handleString = handle.toString(16);
 
       if (handleString.length < 8) {
