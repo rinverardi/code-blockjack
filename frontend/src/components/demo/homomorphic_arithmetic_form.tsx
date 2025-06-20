@@ -8,13 +8,13 @@ import { Progress, setProgress } from "../../lib/progress";
 const HomomorphicArithmeticForm = () => {
   const [addParam0, setAddParam0] = useState(42n);
   const [addParam1, setAddParam1] = useState(43n);
-  const [addResult, setAddResult] = useState<bigint | null>(null);
-  const [contract, setContract] = useState<(Contract & HomomorphicArithmetic) | null>(null);
+  const [addResult, setAddResult] = useState<bigint>();
+  const [contract, setContract] = useState<Contract & HomomorphicArithmetic>();
   const [multiplyParam0, setMultiplyParam0] = useState(6n);
   const [multiplyParam1, setMultiplyParam1] = useState(7n);
-  const [multiplyResult, setMultiplyResult] = useState<bigint | null>(null);
-  const [randomResult, setRandomResult] = useState<bigint | null>(null);
-  const [signer, setSigner] = useState<Signer | null>(null);
+  const [multiplyResult, setMultiplyResult] = useState<bigint>();
+  const [randomResult, setRandomResult] = useState<bigint>();
+  const [signer, setSigner] = useState<Signer>();
 
   const provider = new BrowserProvider(window.ethereum);
 

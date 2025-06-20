@@ -17,11 +17,11 @@ enum State {
 }
 
 const NaiveBlockjackForm = () => {
-  const [address, setAddress] = useState<string | null>(null);
-  const [cardsForDealer, setCardsForDealer] = useState<number[] | null>(null);
-  const [cardsForPlayer, setCardsForPlayer] = useState<number[] | null>(null);
-  const [contract, setContract] = useState<(Contract & NaiveBlockjack) | null>(null);
-  const [state, setState] = useState<State | null>(null);
+  const [address, setAddress] = useState<string>();
+  const [cardsForDealer, setCardsForDealer] = useState<number[]>();
+  const [cardsForPlayer, setCardsForPlayer] = useState<number[]>();
+  const [contract, setContract] = useState<Contract & NaiveBlockjack>();
+  const [state, setState] = useState<State>();
 
   const overrides: Overrides = { gasLimit: 300_000 };
   const provider = new BrowserProvider(window.ethereum);
@@ -29,9 +29,8 @@ const NaiveBlockjackForm = () => {
   useEffect(() => {
     (async () => {
       const signer = await provider.getSigner();
-      const signerAddress = await signer.getAddress();
 
-      setAddress(signerAddress);
+      setAddress(await signer.getAddress());
 
       const deployment = await import(
         import.meta.env.MOCKED

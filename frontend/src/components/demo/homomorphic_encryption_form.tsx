@@ -6,12 +6,12 @@ import { wrapContract, wrapInstance } from "../../lib/chaos";
 import { Progress, setProgress } from "../../lib/progress";
 
 const HomomorphicEncryptionForm = () => {
-  const [contract, setContract] = useState<(Contract & HomomorphicEncryption) | null>(null);
-  const [confidentialResult, setConfidentialResult] = useState<bigint | null>(null);
+  const [contract, setContract] = useState<Contract & HomomorphicEncryption>();
+  const [confidentialResult, setConfidentialResult] = useState<bigint>();
   const [confidentialValue, setConfidentialValue] = useState(42n);
-  const [handle, setHandle] = useState<bigint | null>(null);
-  const [signer, setSigner] = useState<Signer | null>(null);
-  const [transparentResult, setTransparentResult] = useState<bigint | null>(null);
+  const [handle, setHandle] = useState<bigint>();
+  const [signer, setSigner] = useState<Signer>();
+  const [transparentResult, setTransparentResult] = useState<bigint>();
   const [transparentValue, setTransparentValue] = useState(42n);
 
   const provider = new BrowserProvider(window.ethereum);
@@ -154,8 +154,8 @@ const HomomorphicEncryptionForm = () => {
     setProgress(Progress.Idle);
   }
 
-  function showHandle(handle: bigint | null): string | undefined {
-    if (handle !== null) {
+  function showHandle(handle: bigint | undefined): string | undefined {
+    if (handle) {
       const handleString = handle.toString(16);
 
       if (handleString.length < 8) {
