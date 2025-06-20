@@ -5,7 +5,11 @@ import { Database } from "sqlite3";
 
 import { TFHEEXECUTOR_ADDRESS } from "../test/constants";
 
-const provider = new JsonRpcProvider("http://127.0.0.1:8545");
+let providerInstance: JsonRpcProvider;
+
+function getProvider() {
+  return providerInstance ? providerInstance : (providerInstance = new JsonRpcProvider("http://127.0.0.1:8545"));
+}
 
 const executorAddress = TFHEEXECUTOR_ADDRESS;
 
@@ -152,9 +156,9 @@ const abi = [
 ];
 
 async function processAllPastTFHEExecutorEvents() {
-  const latestBlockNumber = await provider.getBlockNumber();
+  const latestBlockNumber = await getProvider().getBlockNumber();
 
-  const contract = new ethers.Contract(executorAddress, abi, provider);
+  const contract = new ethers.Contract(executorAddress, abi, getProvider());
 
   // Fetch all events emitted by the contract
   const filter = {
@@ -163,7 +167,7 @@ async function processAllPastTFHEExecutorEvents() {
     toBlock: latestBlockNumber,
   };
 
-  const logs = await provider.getLogs(filter);
+  const logs = await getProvider().getLogs(filter);
 
   const events = logs
     .map((log) => {

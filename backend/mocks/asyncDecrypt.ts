@@ -32,11 +32,17 @@ const argEvents =
   "(uint256 indexed requestID, uint256[] cts, address contractCaller, bytes4 callbackSelector, uint256 msgValue, uint256 maxTimestamp, bool passSignaturesToCaller)";
 const ifaceEventDecryption = new ethers.Interface(["event EventDecryption" + argEvents]);
 
-const provider = new ethers.WebSocketProvider("ws://127.0.0.1:8545");
-const acl = new ethers.Contract(ACL_ADDRESS, aclArtifact.abi, provider);
-const gateway = new ethers.Contract(GATEWAYCONTRACT_ADDRESS, gatewayArtifact.abi, provider);
+let provider: ethers.WebSocketProvider;
+let acl: ethers.Contract;
+let gateway: ethers.Contract;
 
 export const initGateway = async (): Promise<void> => {
+  await waitForBackend();
+
+  provider = new ethers.WebSocketProvider("ws://127.0.0.1:8545");
+  acl = new ethers.Contract(ACL_ADDRESS, aclArtifact.abi, provider);
+  gateway = new ethers.Contract(GATEWAYCONTRACT_ADDRESS, gatewayArtifact.abi, provider);
+
   gateway.on("EventDecryption", async (requestID, cts) => {
     console.log(`${await currentTime()} - Requested decrypt (requestID ${requestID}) for handles ${cts}`);
     await fulfillRequest(requestID, cts);
@@ -164,4 +170,19 @@ async function kmsSign(handlesList: bigint[], decryptedResult: string, kmsSigner
 
   const result = r + s.substring(2) + v.toString(16);
   return result;
+}
+
+async function waitForBackend() {
+  const provider = new ethers.JsonRpcProvider("http://127.0.0.1:8545");
+
+  provider.on("error", () => {});
+
+  for (;;) {
+    try {
+      await provider.getBlockNumber();
+      break;
+    } catch (_) {
+      await new Promise((resolve) => setTimeout(resolve, 1_000));
+    }
+  }
 }

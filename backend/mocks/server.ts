@@ -15,7 +15,11 @@ import {
 import { initGateway } from "./asyncDecrypt";
 import { awaitCoprocessor, getClearText, insertSQL } from "./coprocessorUtils";
 
-const provider = new JsonRpcProvider("http://127.0.0.1:8545");
+let providerInstance: JsonRpcProvider;
+
+function getProvider() {
+  return providerInstance ? providerInstance : (providerInstance = new JsonRpcProvider("http://127.0.0.1:8545"));
+}
 
 enum Types {
   ebool = 0,
@@ -277,7 +281,7 @@ async function computeInputSignatureCopro(
   contractAddress: string,
 ): Promise<string> {
   const privKeySigner = PRIVATE_KEY_COPROCESSOR_ACCOUNT;
-  const coprocSigner = new Wallet(privKeySigner).connect(provider);
+  const coprocSigner = new Wallet(privKeySigner).connect(getProvider());
   const signature = await coprocSign(hash, handlesList, userAddress, contractAddress, coprocSigner);
   return signature;
 }
@@ -291,7 +295,7 @@ async function computeInputSignaturesKMS(
   const numSigners = 1; // @note: only 1 KMS signer in mocked mode for now
   for (let idx = 0; idx < numSigners; idx++) {
     const privKeySigner = PRIVATE_KEY_KMS_SIGNER;
-    const kmsSigner = new ethers.Wallet(privKeySigner).connect(provider);
+    const kmsSigner = new ethers.Wallet(privKeySigner).connect(getProvider());
     const signature = await kmsSign(hash, userAddress, contractAddress, kmsSigner);
     signatures.push(signature);
   }
@@ -414,5 +418,6 @@ async function kmsSign(
 
 app.listen(port, async () => {
   console.log(`Server running at http://localhost:${port}`);
+
   await initGateway();
 });
