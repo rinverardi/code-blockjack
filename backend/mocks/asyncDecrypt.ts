@@ -41,6 +41,16 @@ export const initGateway = async (): Promise<void> => {
     console.log(`${await currentTime()} - Requested decrypt (requestID ${requestID}) for handles ${cts}`);
     await fulfillRequest(requestID, cts);
   });
+
+  // Re-connect regularly to prevent missed events due to silent timeouts.
+
+  setTimeout(() => {
+    console.log("Re-connecting to backend ...");
+
+    gateway.removeAllListeners().then(() => {
+      initGateway();
+    });
+  }, 240_000);
 };
 
 const allTrue = (arr: boolean[], fn = Boolean) => arr.every(fn);
