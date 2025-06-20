@@ -7,7 +7,7 @@
 
 a,
 a:visited {
-  color: var(--blue);
+  color: var(--accentDark);
   text-decoration: none;
 }
 
@@ -23,6 +23,7 @@ button {
   border: 2px solid var(--black);
   border-radius: 4px;
   color: var(--white);
+  cursor: pointer;
   padding: 6px 8px;
 }
 
@@ -31,7 +32,7 @@ button + span,
 input + span,
 span + button,
 span + input {
-  margin-left: 4px;
+  margin-left: 8px;
 }
 
 button:active {
@@ -162,7 +163,7 @@ input {
 
 #progress__indicator {
   animation: spin 1s ease-in-out infinite;
-  border: 2px solid var(--black);
+  border: 4px solid var(--accent);
   border-radius: 50%;
   border-top-color: transparent;
   height: 64px;
@@ -184,11 +185,13 @@ input {
 }
 
 :root {
+  --accent: #678;
+  --accentDark: #456;
+  --accentLight: #9ab;
   --black: #000;
   --blue: #44b;
-  --gray: #888;
+  --gray: #666;
   --green: #282;
-  --greenish: #8a8;
   --red: #c44;
   --white: #fff;
 }
@@ -203,7 +206,7 @@ input {
 }
 
 .status button {
-  background: var(--green);
+  background: var(--accent);
   border: none;
   color: var(--white);
   padding: 8px 10px;
