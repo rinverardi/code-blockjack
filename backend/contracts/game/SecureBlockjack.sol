@@ -31,15 +31,8 @@ contract SecureBlockjack is GatewayCaller, SepoliaZamaFHEVMConfig, SepoliaZamaGa
     event CardsChangedForPlayer(address indexed game, euint8[] cards);
     event StateChanged(address indexed game, State state);
 
-    mapping(uint8 => euint8) _encryptedPoints;
-    mapping(State => euint8) _encryptedStates;
     mapping(uint256 => address) _gameAddresses;
     mapping(address => Game) _gameStructs;
-
-    constructor() {
-        _encryptPoints();
-        _encryptStates();
-    }
 
     function _checkDealer(Game storage game) private {
         euint8 pointsForDealer = _rateCards(game.cardsForDealer);
@@ -47,10 +40,10 @@ contract SecureBlockjack is GatewayCaller, SepoliaZamaFHEVMConfig, SepoliaZamaGa
 
         euint8 state = TFHE.select(
             TFHE.lt(pointsForDealer, 17),
-            _encryptedStates[State.WaitingForDealer],
+            _encryptState(State.WaitingForDealer),
             TFHE.select(
                 TFHE.gt(pointsForDealer, 21),
-                _encryptedStates[State.DealerBusts],
+                _encryptState(State.DealerBusts),
                 _gameOver(pointsForDealer, pointsForPlayer)
             )
         );
@@ -65,17 +58,17 @@ contract SecureBlockjack is GatewayCaller, SepoliaZamaFHEVMConfig, SepoliaZamaGa
 
         euint8 state = TFHE.select(
             TFHE.eq(pointsForPlayer, 21),
-            _encryptedStates[State.PlayerWins],
+            _encryptState(State.PlayerWins),
             TFHE.select(
                 TFHE.gt(pointsForPlayer, 21),
-                _encryptedStates[State.PlayerBusts],
+                _encryptState(State.PlayerBusts),
                 TFHE.select(
                     TFHE.eq(pointsForDealer, 21),
-                    _encryptedStates[State.DealerWins],
+                    _encryptState(State.DealerWins),
                     TFHE.select(
                         TFHE.gt(pointsForDealer, 21),
-                        _encryptedStates[State.DealerBusts],
-                        _encryptedStates[State.WaitingForPlayer]
+                        _encryptState(State.DealerBusts),
+                        _encryptState(State.WaitingForPlayer)
                     )
                 )
             )
@@ -90,8 +83,8 @@ contract SecureBlockjack is GatewayCaller, SepoliaZamaFHEVMConfig, SepoliaZamaGa
 
         euint8 state = TFHE.select(
             TFHE.gt(pointsForPlayer, 21),
-            _encryptedStates[State.PlayerBusts],
-            _encryptedStates[State.WaitingForPlayer]
+            _encryptState(State.PlayerBusts),
+            _encryptState(State.WaitingForPlayer)
         );
 
         _decryptState(state);
@@ -173,32 +166,20 @@ contract SecureBlockjack is GatewayCaller, SepoliaZamaFHEVMConfig, SepoliaZamaGa
         emit StateChanged(msg.sender, State.Uninitialized);
     }
 
-    function _encryptPoints() private {
-        uint8[3] memory values = [2, 10, 11];
+    function _encryptPoints(uint8 points) private returns (euint8) {
+        euint8 result = TFHE.asEuint8(points);
 
-        for (uint8 index = 0; index < values.length; index++) {
-            uint8 value = values[index];
+        TFHE.allowThis(result);
 
-            TFHE.allowThis(_encryptedPoints[value] = TFHE.asEuint8(value));
-        }
+        return result;
     }
 
-    function _encryptStates() private {
-        State[7] memory values = [
-            State.DealerBusts,
-            State.DealerWins,
-            State.PlayerBusts,
-            State.PlayerWins,
-            State.Tie,
-            State.WaitingForDealer,
-            State.WaitingForPlayer
-        ];
+    function _encryptState(State state) private returns (euint8) {
+        euint8 result = TFHE.asEuint8(uint8(state));
 
-        for (uint256 index = 0; index < values.length; index++) {
-            State value = values[index];
+        TFHE.allowThis(result);
 
-            TFHE.allowThis(_encryptedStates[value] = TFHE.asEuint8(uint8(value)));
-        }
+        return result;
     }
 
     function getGame() public view returns (Game memory) {
@@ -227,11 +208,11 @@ contract SecureBlockjack is GatewayCaller, SepoliaZamaFHEVMConfig, SepoliaZamaGa
         return
             TFHE.select(
                 TFHE.gt(pointsForDealer, pointsForPlayer),
-                _encryptedStates[State.DealerWins],
+                _encryptState(State.DealerWins),
                 TFHE.select(
                     TFHE.lt(pointsForDealer, pointsForPlayer),
-                    _encryptedStates[State.PlayerWins],
-                    _encryptedStates[State.Tie]
+                    _encryptState(State.PlayerWins),
+                    _encryptState(State.Tie)
                 )
             );
     }
@@ -246,7 +227,7 @@ contract SecureBlockjack is GatewayCaller, SepoliaZamaFHEVMConfig, SepoliaZamaGa
     }
 
     function _randomCard(bool revealable) private returns (euint8) {
-        euint8 card = TFHE.add(TFHE.rem(TFHE.randEuint8(), 13), _encryptedPoints[2]);
+        euint8 card = TFHE.add(TFHE.rem(TFHE.randEuint8(), 13), _encryptPoints(2));
 
         TFHE.allowThis(card);
 
@@ -262,7 +243,7 @@ contract SecureBlockjack is GatewayCaller, SepoliaZamaFHEVMConfig, SepoliaZamaGa
             TFHE.select(
                 TFHE.lt(card, 11),
                 card,
-                TFHE.select(TFHE.lt(card, 14), _encryptedPoints[10], _encryptedPoints[11])
+                TFHE.select(TFHE.lt(card, 14), _encryptPoints(10), _encryptPoints(11))
             );
     }
 
