@@ -182,6 +182,19 @@ contract SecureBlockjack is GatewayCaller, SepoliaZamaFHEVMConfig, SepoliaZamaGa
         return result;
     }
 
+    function _gameOver(euint8 pointsForDealer, euint8 pointsForPlayer) private returns (euint8) {
+        return
+            TFHE.select(
+                TFHE.gt(pointsForDealer, pointsForPlayer),
+                _encryptState(State.DealerWins),
+                TFHE.select(
+                    TFHE.lt(pointsForDealer, pointsForPlayer),
+                    _encryptState(State.PlayerWins),
+                    _encryptState(State.Tie)
+                )
+            );
+    }
+
     function getGame() public view returns (Game memory) {
         return _gameStructs[msg.sender];
     }
@@ -202,19 +215,6 @@ contract SecureBlockjack is GatewayCaller, SepoliaZamaFHEVMConfig, SepoliaZamaGa
 
         _dealPlayer(game, 1);
         _checkPlayer(game);
-    }
-
-    function _gameOver(euint8 pointsForDealer, euint8 pointsForPlayer) private returns (euint8) {
-        return
-            TFHE.select(
-                TFHE.gt(pointsForDealer, pointsForPlayer),
-                _encryptState(State.DealerWins),
-                TFHE.select(
-                    TFHE.lt(pointsForDealer, pointsForPlayer),
-                    _encryptState(State.PlayerWins),
-                    _encryptState(State.Tie)
-                )
-            );
     }
 
     function _isGameOver(State state) private pure returns (bool) {
