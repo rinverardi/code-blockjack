@@ -44,7 +44,7 @@ Point your wallet to [http://localhost:8545/](http://localhost:8545/) with chain
 
 ### Deploying on Sepolia
 
-	$ npm run deploy-sepolia
+	$ npx hardhat deploy --network sepolia
 
 ### Testing against Hardhat
 
