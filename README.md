@@ -1,10 +1,19 @@
 # Blockjack
 
+![](https://img.shields.io/badge/Blockchain-Ethereum%20Sepolia-blue)
+![](https://img.shields.io/badge/Status-Experimental-orange)
+
 ## Abstract
 
 Blockjack is a decentralized card game running on the Ethereum blockchain.
 
 The game is powered by a smart contract and includes an interactive web frontend. All core logic — such as dealer behavior, instant wins, and instant losses — is enforced on-chain to ensure transparency and trustlessness.
+
+## Demonstration
+
+[Play the game in your browser!](https://blockjack.i7i.ch) Make sure your wallet is connected to Ethereum's Testnet (Sepolia).
+
+Doesn't work for you? [Watch a pre-recorded session instead!](https://youtu.be/_M8--051nBU)
 
 ## Documentation
 
