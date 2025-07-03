@@ -4,7 +4,7 @@ pragma solidity ^0.8.24;
 
 import "./SecureBlockjack.sol";
 
-contract SecureBlockjackForBenchmarks is SecureBlockjack {
+contract SecureBlockjackForMeasurements is SecureBlockjack {
     function _randomCard(bool revealable) internal override returns (euint8) {
         super._randomCard(revealable);
 

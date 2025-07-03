@@ -36,14 +36,6 @@ Lint the code:
 
 	$ npm run lint
 
-Run the benchmarks on Hardhat:
-
-	$ npx hardhat test benchmarks/*.ts
-
-Run the benchmarks on Sepolia:
-
-	$ npx hardhat test --network sepolia benchmarks/*.ts
-
 ### Deploying on Hardhat
 
 	$ npx hardhat node
@@ -54,6 +46,16 @@ Point your wallet to [http://localhost:8545/](http://localhost:8545/) with chain
 
 	$ npx hardhat deploy --network sepolia
 	$ npx hardhat verify --network sepolia {address}
+
+### Measuring the Gas Usage
+
+Run the measurements on Hardhat:
+
+	$ npx hardhat test measurements/*.ts
+
+Run the measurements on Sepolia:
+
+	$ npx hardhat test --network sepolia measurements/*.ts
 
 ### Testing against Hardhat
 

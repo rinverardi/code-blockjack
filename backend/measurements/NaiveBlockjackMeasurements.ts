@@ -2,7 +2,7 @@ import { expect } from "chai";
 import { ContractTransactionReceipt, Signer } from "ethers";
 import { ethers } from "hardhat";
 
-import { NaiveBlockjackForBenchmarks } from "../types";
+import { NaiveBlockjackForMeasurements } from "../types";
 
 enum State {
   Uninitialized,
@@ -15,7 +15,7 @@ enum State {
 }
 
 describe("Naive Blockjack", function () {
-  let contract: NaiveBlockjackForBenchmarks;
+  let contract: NaiveBlockjackForMeasurements;
   let signer: Signer;
 
   afterEach(function () {
@@ -31,7 +31,7 @@ describe("Naive Blockjack", function () {
   });
 
   before(async function () {
-    const factory = await ethers.getContractFactory("NaiveBlockjackForBenchmarks");
+    const factory = await ethers.getContractFactory("NaiveBlockjackForMeasurements");
 
     contract = await factory.deploy();
 

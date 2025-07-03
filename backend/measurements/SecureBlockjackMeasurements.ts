@@ -5,7 +5,7 @@ import { ethers, network } from "hardhat";
 import { awaitAllDecryptionResults } from "../test/asyncDecrypt";
 import { getFHEGasFromTxReceipt } from "../test/coprocessorUtils";
 import { debug } from "../test/utils";
-import { SecureBlockjackForBenchmarks } from "../types";
+import { SecureBlockjackForMeasurements } from "../types";
 
 enum State {
   Uninitialized,
@@ -28,7 +28,7 @@ function isHardhat() {
 }
 
 describe("Secure Blockjack", function () {
-  let contract: SecureBlockjackForBenchmarks;
+  let contract: SecureBlockjackForMeasurements;
   let signer: Signer;
 
   afterEach(function () {
@@ -44,7 +44,7 @@ describe("Secure Blockjack", function () {
   });
 
   before(async function () {
-    const factory = await ethers.getContractFactory("SecureBlockjackForBenchmarks");
+    const factory = await ethers.getContractFactory("SecureBlockjackForMeasurements");
 
     contract = await factory.deploy();
 
