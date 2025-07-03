@@ -38,6 +38,7 @@ const NaiveBlockjackForm = () => {
           : "@backend-deployments/sepolia/NaiveBlockjack.json"
       );
 
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       const contract = new Contract(deployment.address, deployment.abi, signer) as Contract & NaiveBlockjack;
 
       setContract(contract);
@@ -49,23 +50,23 @@ const NaiveBlockjackForm = () => {
       updateState(undefined, game.state);
 
       setProgress(Progress.Idle);
-    })();
+    })().catch(console.error);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    (async () => {
-      if (contract) {
-        contract.on(contract.filters.CardsChangedForDealer, updateCardsForDealer);
-        contract.on(contract.filters.CardsChangedForPlayer, updateCardsForPlayer);
-        contract.on(contract.filters.StateChanged, updateState);
+    if (contract) {
+      contract.on(contract.filters.CardsChangedForDealer, updateCardsForDealer).catch(console.error);
+      contract.on(contract.filters.CardsChangedForPlayer, updateCardsForPlayer).catch(console.error);
+      contract.on(contract.filters.StateChanged, updateState).catch(console.error);
 
-        return () => {
-          contract.off(contract.filters.CardsChangedForDealer, updateCardsForDealer);
-          contract.off(contract.filters.CardsChangedForPlayer, updateCardsForPlayer);
-          contract.off(contract.filters.StateChanged, updateState);
-        };
-      }
-    })();
+      return () => {
+        contract.off(contract.filters.CardsChangedForDealer, updateCardsForDealer).catch(console.error);
+        contract.off(contract.filters.CardsChangedForPlayer, updateCardsForPlayer).catch(console.error);
+        contract.off(contract.filters.StateChanged, updateState).catch(console.error);
+      };
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [contract]);
 
   function displayActions() {
@@ -150,7 +151,7 @@ const NaiveBlockjackForm = () => {
 
       setProgressUnlessIdle(Progress.Receiving);
     } catch (error) {
-      alert(error);
+      console.error(error);
 
       setProgress(Progress.Idle);
     }
@@ -165,7 +166,7 @@ const NaiveBlockjackForm = () => {
 
       setProgressUnlessIdle(Progress.Receiving);
     } catch (error) {
-      alert(error);
+      console.error(error);
 
       setProgress(Progress.Idle);
     }
@@ -180,7 +181,7 @@ const NaiveBlockjackForm = () => {
 
       setProgressUnlessIdle(Progress.Receiving);
     } catch (error) {
-      alert(error);
+      console.error(error);
 
       setProgress(Progress.Idle);
     }
@@ -195,7 +196,7 @@ const NaiveBlockjackForm = () => {
 
       setProgressUnlessIdle(Progress.Receiving);
     } catch (error) {
-      alert(error);
+      console.error(error);
 
       setProgress(Progress.Idle);
     }
@@ -221,7 +222,7 @@ const NaiveBlockjackForm = () => {
     if (!game || game === address) {
       const stateValue = Number(state);
 
-      if (stateValue === State.Uninitialized) {
+      if (stateValue === Number(State.Uninitialized)) {
         setCardsForDealer([]);
         setCardsForPlayer([]);
       }

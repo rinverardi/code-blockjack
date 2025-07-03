@@ -28,18 +28,20 @@ const HomomorphicEncryptionForm = () => {
           : "@backend-deployments/sepolia/HomomorphicEncryption.json"
       );
 
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       const contract = new Contract(deployment.address, deployment.abi, signer) as Contract & HomomorphicEncryption;
 
       setContract(contract);
       setProgress(Progress.Idle);
-    })();
+    })().catch(console.error);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function onChangeConfidentialValue(event: React.ChangeEvent<HTMLInputElement>) {
     try {
       setConfidentialValue(BigInt(event.target.value));
     } catch (error) {
-      alert(error);
+      console.error(error);
     }
   }
 
@@ -47,7 +49,7 @@ const HomomorphicEncryptionForm = () => {
     try {
       setTransparentValue(BigInt(event.target.value));
     } catch (error) {
-      alert(error);
+      console.error(error);
     }
   }
 
@@ -58,7 +60,7 @@ const HomomorphicEncryptionForm = () => {
       const decryptValue = await contract!.decryptValue();
       await decryptValue.wait();
     } catch (error) {
-      alert(error);
+      console.error(error);
     }
 
     setProgress(Progress.Idle);
@@ -72,7 +74,7 @@ const HomomorphicEncryptionForm = () => {
 
       setHandle(handle);
     } catch (error) {
-      alert(error);
+      console.error(error);
     }
 
     setProgress(Progress.Idle);
@@ -103,7 +105,7 @@ const HomomorphicEncryptionForm = () => {
 
       setConfidentialResult(result);
     } catch (error) {
-      alert(error);
+      console.error(error);
     }
 
     setProgress(Progress.Idle);
@@ -117,7 +119,7 @@ const HomomorphicEncryptionForm = () => {
 
       setTransparentResult(value);
     } catch (error) {
-      alert(error);
+      console.error(error);
     }
 
     setProgress(Progress.Idle);
@@ -135,7 +137,7 @@ const HomomorphicEncryptionForm = () => {
       const encryptValue = await contract!.setValue(input.handles[0], input.inputProof);
       await encryptValue.wait();
     } catch (error) {
-      alert(error);
+      console.error(error);
     }
 
     setProgress(Progress.Idle);
@@ -148,7 +150,7 @@ const HomomorphicEncryptionForm = () => {
       const encryptValue = await contract!.encryptValue(transparentValue);
       await encryptValue.wait();
     } catch (error) {
-      alert(error);
+      console.error(error);
     }
 
     setProgress(Progress.Idle);

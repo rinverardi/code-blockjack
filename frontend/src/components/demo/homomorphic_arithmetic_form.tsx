@@ -30,11 +30,13 @@ const HomomorphicArithmeticForm = () => {
           : "@backend-deployments/sepolia/HomomorphicArithmetic.json"
       );
 
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       const contract = new Contract(deployment.address, deployment.abi, signer) as Contract & HomomorphicArithmetic;
 
       setContract(contract);
       setProgress(Progress.Idle);
-    })();
+    })().catch(console.error);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function getResult() {
@@ -64,7 +66,7 @@ const HomomorphicArithmeticForm = () => {
     try {
       setAddParam0(BigInt(event.target.value));
     } catch (error) {
-      alert(error);
+      console.error(error);
     }
   }
 
@@ -72,7 +74,7 @@ const HomomorphicArithmeticForm = () => {
     try {
       setAddParam1(BigInt(event.target.value));
     } catch (error) {
-      alert(error);
+      console.error(error);
     }
   }
 
@@ -80,7 +82,7 @@ const HomomorphicArithmeticForm = () => {
     try {
       setMultiplyParam0(BigInt(event.target.value));
     } catch (error) {
-      alert(error);
+      console.error(error);
     }
   }
 
@@ -88,7 +90,7 @@ const HomomorphicArithmeticForm = () => {
     try {
       setMultiplyParam1(BigInt(event.target.value));
     } catch (error) {
-      alert(error);
+      console.error(error);
     }
   }
 
@@ -107,7 +109,7 @@ const HomomorphicArithmeticForm = () => {
 
       setAddResult(await getResult());
     } catch (error) {
-      alert(error);
+      console.error(error);
     }
 
     setProgress(Progress.Idle);
@@ -128,7 +130,7 @@ const HomomorphicArithmeticForm = () => {
 
       setMultiplyResult(await getResult());
     } catch (error) {
-      alert(error);
+      console.error(error);
     }
 
     setProgress(Progress.Idle);
@@ -143,7 +145,7 @@ const HomomorphicArithmeticForm = () => {
 
       setRandomResult(await getResult());
     } catch (error) {
-      alert(error);
+      console.error(error);
     }
 
     setProgress(Progress.Idle);
