@@ -12,6 +12,7 @@ When testing against a local Hardhat environment, the example values are adequat
 This project uses a modern development stack to ensure maintainability and reliability:
 
 - [Ethers](https://github.com/ethers-io/ethers.js/)
+- [fhEVM](https://github.com/zama-ai/fhevm-solidity)
 - [Hardhat](https://github.com/nomiclabs/hardhat)
 - [Prettier Plugin Solidity](https://github.com/prettier-solidity/prettier-plugin-solidity)
 - [Solcover](https://github.com/sc-forks/solidity-coverage)

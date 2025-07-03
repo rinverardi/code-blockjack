@@ -2,7 +2,7 @@ import type { HomomorphicEncryption } from "@backend-types/contracts/demo/Homomo
 import { BrowserProvider, Contract, Signer } from "ethers";
 import { useEffect, useState } from "react";
 
-import { wrapContract, wrapInstance } from "../../lib/chaos";
+import { getInstance } from "../../lib/fhevm/fhevmjs";
 import { Progress, setProgress } from "../../lib/progress";
 
 const HomomorphicEncryptionForm = () => {
@@ -30,7 +30,7 @@ const HomomorphicEncryptionForm = () => {
 
       const contract = new Contract(deployment.address, deployment.abi, signer) as Contract & HomomorphicEncryption;
 
-      setContract(wrapContract(contract, "HomomorphicEncryption"));
+      setContract(contract);
       setProgress(Progress.Idle);
     })();
   }, []);
@@ -82,9 +82,9 @@ const HomomorphicEncryptionForm = () => {
     setProgress(Progress.Receiving);
 
     try {
-      const { publicKey, privateKey } = wrapInstance().generateKeypair();
+      const { publicKey, privateKey } = getInstance().generateKeypair();
 
-      const eip712 = wrapInstance().createEIP712(publicKey, await contract!.getAddress());
+      const eip712 = getInstance().createEIP712(publicKey, await contract!.getAddress());
 
       const signature = await signer!.signTypedData(
         eip712.domain,
@@ -92,7 +92,7 @@ const HomomorphicEncryptionForm = () => {
         eip712.message,
       );
 
-      const result = await wrapInstance().reencrypt(
+      const result = await getInstance().reencrypt(
         handle!.valueOf(),
         privateKey,
         publicKey,
@@ -127,7 +127,7 @@ const HomomorphicEncryptionForm = () => {
     setProgress(Progress.Sending);
 
     try {
-      const input = await wrapInstance()
+      const input = await getInstance()
         .createEncryptedInput(await contract!.getAddress(), await signer!.getAddress())
         .add8(confidentialValue)
         .encrypt();
