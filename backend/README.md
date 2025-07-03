@@ -36,6 +36,14 @@ Lint the code:
 
 	$ npm run lint
 
+Run the benchmarks on Hardhat:
+
+	$ npx hardhat test benchmarks/*.ts
+
+Run the benchmarks on Sepolia:
+
+	$ npx hardhat test --network sepolia benchmarks/*.ts
+
 ### Deploying on Hardhat
 
 	$ npx hardhat node
