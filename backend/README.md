@@ -26,11 +26,11 @@ Clean up:
 
 Compile the code:
 
-	$ npm run compile
+	$ npx hardhat compile
 
 Generate the bindings:
 
-	$ npm run typechain
+	$ npx hardhat typechain
 
 Lint the code:
 
@@ -63,11 +63,11 @@ In this mode, the tests are executed against a local Hardhat environment using a
 
 Run the tests:
 
-	$ npm run test
+	$ npm hardhat test [path]
 
 Run the tests with coverage:
 
-	$ npm run coverage
+	$ npx hardhat coverage
 	$ firefox coverage/index.html
 
 ### Testing against Sepolia
@@ -76,7 +76,7 @@ In this mode, the tests are executed against the Sepolia network using a pre-dep
 
 Run the tests:
 
-	$ npx hardhat test [path] --network sepolia
+	$ npx hardhat test --network sepolia [path]
 
 ## Troubleshooting
 
