@@ -5,7 +5,13 @@ const deployFunction: DeployFunction = async function (environment: HardhatRunti
   const { deploy } = environment.deployments;
   const { deployer } = await environment.getNamedAccounts();
 
-  for (const contract of ["HomomorphicArithmetic", "HomomorphicEncryption", "NaiveBlockjack", "SecureBlockjack"]) {
+  for (const contract of [
+    "HomomorphicArithmetic",
+    "HomomorphicEncryption",
+    "NaiveBlockjack",
+    "NaiveBlockjackForBenchmarks",
+    "SecureBlockjack",
+  ]) {
     await deploy(contract, { from: deployer, log: true });
   }
 };

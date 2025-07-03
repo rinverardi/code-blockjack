@@ -87,7 +87,7 @@ contract NaiveBlockjack {
         _setState(game, _rateCards(game.cardsForPlayer) > 21 ? State.PlayerBusts : State.Waiting);
     }
 
-    function _randomCard(uint256 seed) virtual internal returns (uint8) {
+    function _randomCard(uint256 seed) internal virtual returns (uint8) {
         uint256 value = uint256(keccak256(abi.encodePacked(seed, block.timestamp, block.prevrandao, msg.sender)));
 
         return uint8((value % 13) + 2);
