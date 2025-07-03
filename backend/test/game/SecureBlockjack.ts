@@ -2,7 +2,7 @@ import { expect } from "chai";
 import { Signer } from "ethers";
 import { ethers, network } from "hardhat";
 
-import { SecureBlockjackForTesting } from "../../types";
+import { SecureBlockjackForTests } from "../../types";
 import { awaitAllDecryptionResults } from "../asyncDecrypt";
 import { debug } from "../utils";
 
@@ -32,10 +32,10 @@ describe("Secure Blockjack", function () {
   let bob: Signer;
   let carol: Signer;
 
-  let contract: SecureBlockjackForTesting;
+  let contract: SecureBlockjackForTests;
 
   before(async function () {
-    const factory = await ethers.getContractFactory("SecureBlockjackForTesting");
+    const factory = await ethers.getContractFactory("SecureBlockjackForTests");
 
     contract = await factory.deploy();
 
@@ -57,8 +57,8 @@ describe("Secure Blockjack", function () {
   it("Create game", async function () {
     const bobsContract = contract.connect(bob);
 
-    const plantDeck = await bobsContract.plantDeck([9, 8, 7, 6]);
-    await plantDeck.wait();
+    const plantCards = await bobsContract.plantCards([9, 8, 7, 6]);
+    await plantCards.wait();
 
     const createGame = await bobsContract.createGame();
     await createGame.wait();
@@ -82,12 +82,18 @@ describe("Secure Blockjack", function () {
   it("Create game again for different player", async function () {
     const bobsContract = contract.connect(bob);
 
+    const plantCardsAsBob = await bobsContract.plantCards([9, 8, 7, 6]);
+    await plantCardsAsBob.wait();
+
     const createGameAsBob = await bobsContract.createGame();
     await createGameAsBob.wait();
 
     await awaitAllDecryptionResults(); // Checking -> WaitingForPlayer
 
     const carolsContract = contract.connect(carol);
+
+    const plantCardsAsCarol = await carolsContract.plantCards([9, 8, 7, 6]);
+    await plantCardsAsCarol.wait();
 
     const createGameAsCarol = await carolsContract.createGame();
     await createGameAsCarol.wait();
@@ -97,6 +103,9 @@ describe("Secure Blockjack", function () {
 
   it("Create game again for same player", async function () {
     const bobsContract = contract.connect(bob);
+
+    const plantCards = await bobsContract.plantCards([9, 8, 7, 6]);
+    await plantCards.wait();
 
     const createGame = await bobsContract.createGame();
     await createGame.wait();
@@ -109,8 +118,8 @@ describe("Secure Blockjack", function () {
   it("Dealer busts early", async function () {
     const bobsContract = contract.connect(bob);
 
-    const plantDeck = await bobsContract.plantDeck([A, A, 8, 7]);
-    await plantDeck.wait();
+    const plantCards = await bobsContract.plantCards([A, A, 8, 7]);
+    await plantCards.wait();
 
     const createGame = await bobsContract.createGame();
     await createGame.wait();
@@ -134,8 +143,8 @@ describe("Secure Blockjack", function () {
   it("Dealer busts late", async function () {
     const bobsContract = contract.connect(bob);
 
-    const plantDeck = await bobsContract.plantDeck([9, 8, 7, 8, 7]);
-    await plantDeck.wait();
+    const plantCards = await bobsContract.plantCards([9, 8, 7, 8, 7]);
+    await plantCards.wait();
 
     const createGame = await bobsContract.createGame();
     await createGame.wait();
@@ -174,8 +183,8 @@ describe("Secure Blockjack", function () {
   it("Dealer wins", async function () {
     const bobsContract = contract.connect(bob);
 
-    const plantDeck = await bobsContract.plantDeck([Q, J, 9, 8]);
-    await plantDeck.wait();
+    const plantCards = await bobsContract.plantCards([Q, J, 9, 8]);
+    await plantCards.wait();
 
     const createGame = await bobsContract.createGame();
     await createGame.wait();
@@ -206,8 +215,8 @@ describe("Secure Blockjack", function () {
   it("Dealer wins early", async function () {
     const bobsContract = contract.connect(bob);
 
-    const plantDeck = await bobsContract.plantDeck([A, K, 7, 6]);
-    await plantDeck.wait();
+    const plantCards = await bobsContract.plantCards([A, K, 7, 6]);
+    await plantCards.wait();
 
     const createGame = await bobsContract.createGame();
     await createGame.wait();
@@ -231,8 +240,8 @@ describe("Secure Blockjack", function () {
   it("Dealer wins late", async function () {
     const bobsContract = contract.connect(bob);
 
-    const plantDeck = await bobsContract.plantDeck([8, 7, 6, Q, J]);
-    await plantDeck.wait();
+    const plantCards = await bobsContract.plantCards([8, 7, 6, Q, J]);
+    await plantCards.wait();
 
     const createGame = await bobsContract.createGame();
     await createGame.wait();
@@ -271,8 +280,8 @@ describe("Secure Blockjack", function () {
   it("Game ends in a tie", async function () {
     const bobsContract = contract.connect(bob);
 
-    const plantDeck = await bobsContract.plantDeck([9, 8, 9, 8]);
-    await plantDeck.wait();
+    const plantCards = await bobsContract.plantCards([9, 8, 9, 8]);
+    await plantCards.wait();
 
     const createGame = await bobsContract.createGame();
     await createGame.wait();
@@ -303,8 +312,8 @@ describe("Secure Blockjack", function () {
   it("Player busts early", async function () {
     const bobsContract = contract.connect(bob);
 
-    const plantDeck = await bobsContract.plantDeck([8, 7, A, A]);
-    await plantDeck.wait();
+    const plantCards = await bobsContract.plantCards([8, 7, A, A]);
+    await plantCards.wait();
 
     const createGame = await bobsContract.createGame();
     await createGame.wait();
@@ -328,8 +337,8 @@ describe("Secure Blockjack", function () {
   it("Player busts late", async function () {
     const bobsContract = contract.connect(bob);
 
-    const plantDeck = await bobsContract.plantDeck([9, 8, 7, 8, 7]);
-    await plantDeck.wait();
+    const plantCards = await bobsContract.plantCards([9, 8, 7, 8, 7]);
+    await plantCards.wait();
 
     const createGame = await bobsContract.createGame();
     await createGame.wait();
@@ -361,8 +370,8 @@ describe("Secure Blockjack", function () {
   it("Player wins", async function () {
     const bobsContract = contract.connect(bob);
 
-    const plantDeck = await bobsContract.plantDeck([9, 8, Q, J]);
-    await plantDeck.wait();
+    const plantCards = await bobsContract.plantCards([9, 8, Q, J]);
+    await plantCards.wait();
 
     const createGame = await bobsContract.createGame();
     await createGame.wait();
@@ -393,8 +402,8 @@ describe("Secure Blockjack", function () {
   it("Player wins early", async function () {
     const bobsContract = contract.connect(bob);
 
-    const plantDeck = await bobsContract.plantDeck([7, 6, A, K]);
-    await plantDeck.wait();
+    const plantCards = await bobsContract.plantCards([7, 6, A, K]);
+    await plantCards.wait();
 
     const createGame = await bobsContract.createGame();
     await createGame.wait();
@@ -418,8 +427,8 @@ describe("Secure Blockjack", function () {
   it("Player wins late", async function () {
     const bobsContract = contract.connect(bob);
 
-    const plantDeck = await bobsContract.plantDeck([8, Q, J, 7, 6]);
-    await plantDeck.wait();
+    const plantCards = await bobsContract.plantCards([8, Q, J, 7, 6]);
+    await plantCards.wait();
 
     const createGame = await bobsContract.createGame();
     await createGame.wait();

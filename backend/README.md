@@ -47,6 +47,16 @@ Point your wallet to [http://localhost:8545/](http://localhost:8545/) with chain
 	$ npx hardhat deploy --network sepolia
 	$ npx hardhat verify --network sepolia {address}
 
+### Measuring the Gas Usage
+
+Run the measurements on Hardhat:
+
+	$ npx hardhat test measurements/*.ts
+
+Run the measurements on Sepolia:
+
+	$ npx hardhat test --network sepolia measurements/*.ts
+
 ### Testing against Hardhat
 
 In this mode, the tests are executed against a local Hardhat environment using a mocked coprocessor for simulated homomorphic encryption.
