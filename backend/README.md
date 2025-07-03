@@ -84,4 +84,4 @@ Analyzing RPC requests and responses is a valuable technique for debugging both 
 
 	$ mitmproxy --mode reverse:https://sepolia.infura.io
 
-Once the proxy is running, send traffic through it by setting [http://localhost:8080](http://localhost:8080) as the RPC URL in your development environment or web wallet.
+Once the proxy is running, send traffic through it by setting [http://localhost:8080/](http://localhost:8080/) as the RPC URL in your development environment or web wallet.

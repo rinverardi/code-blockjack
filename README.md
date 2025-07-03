@@ -11,13 +11,13 @@ The game is powered by a smart contract and includes an interactive web frontend
 
 ## Demonstration
 
-[Play the game in your browser!](https://blockjack.i7i.ch) Make sure your wallet is connected to Ethereum's Testnet (Sepolia).
+[Play the game in your browser](https://blockjack.i7i.ch)! Make sure your wallet is connected to Ethereum's Testnet (Sepolia).
 
-Doesn't work for you? [Watch a pre-recorded session instead!](https://youtu.be/_M8--051nBU)
+Doesn't work for you? [Watch a pre-recorded session instead](https://youtu.be/_M8--051nBU)!
 
 ## Documentation
 
-Learn more about [the backend](./backend/README.md) and [the frontend.](./frontend/README.md)
+Learn more about [the backend](./backend/README.md) and [the frontend](./frontend/README.md).
 
 ## Rules
 
