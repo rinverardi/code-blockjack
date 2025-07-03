@@ -4,7 +4,7 @@ pragma solidity ^0.8.24;
 
 import "./NaiveBlockjack.sol";
 
-contract NaiveBlockjackForTesting is NaiveBlockjack {
+contract NaiveBlockjackForTests is NaiveBlockjack {
     function plantDeck(uint8[] memory deck) public {
         _games[msg.sender].deck = deck;
     }

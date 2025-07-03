@@ -2,7 +2,7 @@ import { expect } from "chai";
 import { Signer } from "ethers";
 import { ethers, network } from "hardhat";
 
-import { SecureBlockjackForTesting } from "../../types";
+import { SecureBlockjackForTests } from "../../types";
 import { awaitAllDecryptionResults } from "../asyncDecrypt";
 import { debug } from "../utils";
 
@@ -32,10 +32,10 @@ describe("Secure Blockjack", function () {
   let bob: Signer;
   let carol: Signer;
 
-  let contract: SecureBlockjackForTesting;
+  let contract: SecureBlockjackForTests;
 
   before(async function () {
-    const factory = await ethers.getContractFactory("SecureBlockjackForTesting");
+    const factory = await ethers.getContractFactory("SecureBlockjackForTests");
 
     contract = await factory.deploy();
 

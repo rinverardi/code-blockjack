@@ -2,7 +2,7 @@ import { expect } from "chai";
 import { Signer } from "ethers";
 import { ethers } from "hardhat";
 
-import { NaiveBlockjackForTesting } from "../../types";
+import { NaiveBlockjackForTests } from "../../types";
 
 const [J, Q, K, A] = [11, 12, 13, 14];
 
@@ -20,10 +20,10 @@ describe("Naive Blockjack", function () {
   let bob: Signer;
   let carol: Signer;
 
-  let contract: NaiveBlockjackForTesting;
+  let contract: NaiveBlockjackForTests;
 
   before(async function () {
-    const factory = await ethers.getContractFactory("NaiveBlockjackForTesting");
+    const factory = await ethers.getContractFactory("NaiveBlockjackForTests");
 
     contract = await factory.deploy();
 
