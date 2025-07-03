@@ -45,8 +45,8 @@ describe("Naive Blockjack", function () {
   it("Create game", async function () {
     const bobsContract = contract.connect(bob);
 
-    const plantDeck = await bobsContract.plantDeck([9, 8, 7, 6]);
-    await plantDeck.wait();
+    const plantCards = await bobsContract.plantCards([9, 8, 7, 6]);
+    await plantCards.wait();
 
     const createGame = await bobsContract.createGame();
     await createGame.wait();
@@ -65,10 +65,16 @@ describe("Naive Blockjack", function () {
   it("Create game again for different player", async function () {
     const bobsContract = contract.connect(bob);
 
+    const plantCardsAsBob = await bobsContract.plantCards([9, 8, 7, 6]);
+    await plantCardsAsBob.wait();
+
     const createGameAsBob = await bobsContract.createGame();
     await createGameAsBob.wait();
 
     const carolsContract = contract.connect(carol);
+
+    const plantCardsAsCarol = await carolsContract.plantCards([9, 8, 7, 6]);
+    await plantCardsAsCarol.wait();
 
     const createGameAsCarol = await carolsContract.createGame();
     await createGameAsCarol.wait();
@@ -76,6 +82,9 @@ describe("Naive Blockjack", function () {
 
   it("Create game again for same player", async function () {
     const bobsContract = contract.connect(bob);
+
+    const plantCardsAsBob = await bobsContract.plantCards([9, 8, 7, 6]);
+    await plantCardsAsBob.wait();
 
     const createGame = await bobsContract.createGame();
     await createGame.wait();
@@ -86,8 +95,8 @@ describe("Naive Blockjack", function () {
   it("Dealer busts early", async function () {
     const bobsContract = contract.connect(bob);
 
-    const plantDeck = await bobsContract.plantDeck([A, A, 8, 7]);
-    await plantDeck.wait();
+    const plantCards = await bobsContract.plantCards([A, A, 8, 7]);
+    await plantCards.wait();
 
     const createGame = await bobsContract.createGame();
     await createGame.wait();
@@ -106,8 +115,8 @@ describe("Naive Blockjack", function () {
   it("Dealer busts late", async function () {
     const bobsContract = contract.connect(bob);
 
-    const plantDeck = await bobsContract.plantDeck([9, 8, 7, 8, 7]);
-    await plantDeck.wait();
+    const plantCards = await bobsContract.plantCards([9, 8, 7, 8, 7]);
+    await plantCards.wait();
 
     const createGame = await bobsContract.createGame();
     await createGame.wait();
@@ -132,8 +141,8 @@ describe("Naive Blockjack", function () {
   it("Dealer wins", async function () {
     const bobsContract = contract.connect(bob);
 
-    const plantDeck = await bobsContract.plantDeck([Q, J, 9, 8]);
-    await plantDeck.wait();
+    const plantCards = await bobsContract.plantCards([Q, J, 9, 8]);
+    await plantCards.wait();
 
     const createGame = await bobsContract.createGame();
     await createGame.wait();
@@ -157,8 +166,8 @@ describe("Naive Blockjack", function () {
   it("Dealer wins early", async function () {
     const bobsContract = contract.connect(bob);
 
-    const plantDeck = await bobsContract.plantDeck([A, K, 7, 6]);
-    await plantDeck.wait();
+    const plantCards = await bobsContract.plantCards([A, K, 7, 6]);
+    await plantCards.wait();
 
     const createGame = await bobsContract.createGame();
     await createGame.wait();
@@ -177,8 +186,8 @@ describe("Naive Blockjack", function () {
   it("Dealer wins late", async function () {
     const bobsContract = contract.connect(bob);
 
-    const plantDeck = await bobsContract.plantDeck([8, 7, 6, Q, J]);
-    await plantDeck.wait();
+    const plantCards = await bobsContract.plantCards([8, 7, 6, Q, J]);
+    await plantCards.wait();
 
     const createGame = await bobsContract.createGame();
     await createGame.wait();
@@ -203,8 +212,8 @@ describe("Naive Blockjack", function () {
   it("Game ends in a tie", async function () {
     const bobsContract = contract.connect(bob);
 
-    const plantDeck = await bobsContract.plantDeck([9, 8, 9, 8]);
-    await plantDeck.wait();
+    const plantCards = await bobsContract.plantCards([9, 8, 9, 8]);
+    await plantCards.wait();
 
     const createGame = await bobsContract.createGame();
     await createGame.wait();
@@ -228,8 +237,8 @@ describe("Naive Blockjack", function () {
   it("Player busts early", async function () {
     const bobsContract = contract.connect(bob);
 
-    const plantDeck = await bobsContract.plantDeck([A, A]);
-    await plantDeck.wait();
+    const plantCards = await bobsContract.plantCards([A, A]);
+    await plantCards.wait();
 
     const createGame = await bobsContract.createGame();
     await createGame.wait();
@@ -246,8 +255,8 @@ describe("Naive Blockjack", function () {
   it("Player busts late", async function () {
     const bobsContract = contract.connect(bob);
 
-    const plantDeck = await bobsContract.plantDeck([9, 8, 7, 8, 7]);
-    await plantDeck.wait();
+    const plantCards = await bobsContract.plantCards([9, 8, 7, 8, 7]);
+    await plantCards.wait();
 
     const createGame = await bobsContract.createGame();
     await createGame.wait();
@@ -272,8 +281,8 @@ describe("Naive Blockjack", function () {
   it("Player wins", async function () {
     const bobsContract = contract.connect(bob);
 
-    const plantDeck = await bobsContract.plantDeck([9, 8, Q, J]);
-    await plantDeck.wait();
+    const plantCards = await bobsContract.plantCards([9, 8, Q, J]);
+    await plantCards.wait();
 
     const createGame = await bobsContract.createGame();
     await createGame.wait();
@@ -297,8 +306,8 @@ describe("Naive Blockjack", function () {
   it("Player wins early", async function () {
     const bobsContract = contract.connect(bob);
 
-    const plantDeck = await bobsContract.plantDeck([A, K]);
-    await plantDeck.wait();
+    const plantCards = await bobsContract.plantCards([A, K]);
+    await plantCards.wait();
 
     const createGame = await bobsContract.createGame();
     await createGame.wait();
@@ -316,8 +325,8 @@ describe("Naive Blockjack", function () {
   it("Player wins late", async function () {
     const bobsContract = contract.connect(bob);
 
-    const plantDeck = await bobsContract.plantDeck([8, Q, J, 7, 6]);
-    await plantDeck.wait();
+    const plantCards = await bobsContract.plantCards([8, Q, J, 7, 6]);
+    await plantCards.wait();
 
     const createGame = await bobsContract.createGame();
     await createGame.wait();

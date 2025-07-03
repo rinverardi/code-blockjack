@@ -6,7 +6,6 @@ contract NaiveBlockjack {
     struct Game {
         uint8[] cardsForDealer;
         uint8[] cardsForPlayer;
-        uint8[] deck;
         State state;
     }
 
@@ -53,27 +52,17 @@ contract NaiveBlockjack {
         _setState(game, State.Waiting);
     }
 
-    function _dealDealer(Game storage game, uint8 count) private {
+    function _dealDealer(Game storage game, uint8 count) internal {
         for (; count > 0; count--) {
-            if (game.deck.length > 0) {
-                game.cardsForDealer.push(game.deck[game.deck.length - 1]);
-                game.deck.pop();
-            } else {
-                game.cardsForDealer.push(_randomCard(_seed++));
-            }
+            game.cardsForDealer.push(_randomCard(++_seed));
         }
 
         emit CardsChangedForDealer(msg.sender, game.cardsForDealer);
     }
 
-    function _dealPlayer(Game storage game, uint8 count) private {
+    function _dealPlayer(Game storage game, uint8 count) internal {
         for (; count > 0; count--) {
-            if (game.deck.length > 0) {
-                game.cardsForPlayer.push(game.deck[game.deck.length - 1]);
-                game.deck.pop();
-            } else {
-                game.cardsForPlayer.push(_randomCard(_seed++));
-            }
+            game.cardsForPlayer.push(_randomCard(++_seed));
         }
 
         emit CardsChangedForPlayer(msg.sender, game.cardsForPlayer);
@@ -98,13 +87,13 @@ contract NaiveBlockjack {
         _setState(game, _rateCards(game.cardsForPlayer) > 21 ? State.PlayerBusts : State.Waiting);
     }
 
-    function _randomCard(uint256 seed) private view returns (uint8) {
+    function _randomCard(uint256 seed) virtual internal returns (uint8) {
         uint256 value = uint256(keccak256(abi.encodePacked(seed, block.timestamp, block.prevrandao, msg.sender)));
 
         return uint8((value % 13) + 2);
     }
 
-    function _rateCard(uint8 card) private pure returns (uint8) {
+    function _rateCard(uint8 card) internal pure returns (uint8) {
         if (card < 11) {
             return card;
         } else if (card < 14) {
@@ -114,17 +103,17 @@ contract NaiveBlockjack {
         }
     }
 
-    function _rateCards(uint8[] memory cards) private pure returns (uint8) {
+    function _rateCards(uint8[] memory cards) internal pure returns (uint8) {
         uint8 total;
 
-        for (uint8 index = 0; index < cards.length; index++) {
+        for (uint8 index = 0; index < cards.length; ++index) {
             total += _rateCard(cards[index]);
         }
 
         return total;
     }
 
-    function _setState(Game storage game, State state) private {
+    function _setState(Game storage game, State state) internal {
         game.state = state;
 
         emit StateChanged(msg.sender, state);

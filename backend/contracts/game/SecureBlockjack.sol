@@ -11,7 +11,6 @@ contract SecureBlockjack is GatewayCaller, SepoliaZamaFHEVMConfig, SepoliaZamaGa
     struct Game {
         euint8[] cardsForDealer;
         euint8[] cardsForPlayer;
-        euint8[] deck;
         State state;
     }
 
@@ -34,7 +33,7 @@ contract SecureBlockjack is GatewayCaller, SepoliaZamaFHEVMConfig, SepoliaZamaGa
     mapping(uint256 => address) _gameAddresses;
     mapping(address => Game) _gameStructs;
 
-    function _checkDealer(Game storage game) private {
+    function _checkDealer(Game storage game) internal {
         euint8 pointsForDealer = _rateCards(game.cardsForDealer);
         euint8 pointsForPlayer = _rateCards(game.cardsForPlayer);
 
@@ -52,7 +51,7 @@ contract SecureBlockjack is GatewayCaller, SepoliaZamaFHEVMConfig, SepoliaZamaGa
         _setState(game, msg.sender, State.Checking);
     }
 
-    function _checkDealerAndPlayer(Game storage game) private {
+    function _checkDealerAndPlayer(Game storage game) internal {
         euint8 pointsForPlayer = _rateCards(game.cardsForPlayer);
         euint8 pointsForDealer = _rateCards(game.cardsForDealer);
 
@@ -78,7 +77,7 @@ contract SecureBlockjack is GatewayCaller, SepoliaZamaFHEVMConfig, SepoliaZamaGa
         _setState(game, msg.sender, State.Checking);
     }
 
-    function _checkPlayer(Game storage game) private {
+    function _checkPlayer(Game storage game) internal {
         euint8 pointsForPlayer = _rateCards(game.cardsForPlayer);
 
         euint8 state = TFHE.select(
@@ -110,33 +109,23 @@ contract SecureBlockjack is GatewayCaller, SepoliaZamaFHEVMConfig, SepoliaZamaGa
         _checkDealerAndPlayer(game);
     }
 
-    function _dealDealer(Game storage game, uint8 count) private {
+    function _dealDealer(Game storage game, uint8 count) internal {
         for (; count > 0; count--) {
-            if (game.deck.length > 0) {
-                game.cardsForDealer.push(game.deck[game.deck.length - 1]);
-                game.deck.pop();
-            } else {
-                game.cardsForDealer.push(_randomCard(game.cardsForDealer.length > 0));
-            }
+            game.cardsForDealer.push(_randomCard(game.cardsForDealer.length > 0));
         }
 
         emit CardsChangedForDealer(msg.sender, game.cardsForDealer);
     }
 
-    function _dealPlayer(Game storage game, uint8 count) private {
+    function _dealPlayer(Game storage game, uint8 count) internal {
         for (; count > 0; count--) {
-            if (game.deck.length > 0) {
-                game.cardsForPlayer.push(game.deck[game.deck.length - 1]);
-                game.deck.pop();
-            } else {
-                game.cardsForPlayer.push(_randomCard(true));
-            }
+            game.cardsForPlayer.push(_randomCard(true));
         }
 
         emit CardsChangedForPlayer(msg.sender, game.cardsForPlayer);
     }
 
-    function _decryptState(euint8 state) private {
+    function _decryptState(euint8 state) internal {
         uint256[] memory handles = new uint256[](1);
 
         handles[0] = Gateway.toUint256(state);
@@ -166,7 +155,7 @@ contract SecureBlockjack is GatewayCaller, SepoliaZamaFHEVMConfig, SepoliaZamaGa
         emit StateChanged(msg.sender, State.Uninitialized);
     }
 
-    function _encryptPoints(uint8 points) private returns (euint8) {
+    function _encryptPoints(uint8 points) internal returns (euint8) {
         euint8 result = TFHE.asEuint8(points);
 
         TFHE.allowThis(result);
@@ -174,7 +163,7 @@ contract SecureBlockjack is GatewayCaller, SepoliaZamaFHEVMConfig, SepoliaZamaGa
         return result;
     }
 
-    function _encryptState(State state) private returns (euint8) {
+    function _encryptState(State state) internal returns (euint8) {
         euint8 result = TFHE.asEuint8(uint8(state));
 
         TFHE.allowThis(result);
@@ -182,7 +171,7 @@ contract SecureBlockjack is GatewayCaller, SepoliaZamaFHEVMConfig, SepoliaZamaGa
         return result;
     }
 
-    function _gameOver(euint8 pointsForDealer, euint8 pointsForPlayer) private returns (euint8) {
+    function _gameOver(euint8 pointsForDealer, euint8 pointsForPlayer) internal returns (euint8) {
         return
             TFHE.select(
                 TFHE.gt(pointsForDealer, pointsForPlayer),
@@ -217,7 +206,7 @@ contract SecureBlockjack is GatewayCaller, SepoliaZamaFHEVMConfig, SepoliaZamaGa
         _checkPlayer(game);
     }
 
-    function _isGameOver(State state) private pure returns (bool) {
+    function _isGameOver(State state) internal pure returns (bool) {
         return
             state == State.DealerBusts ||
             state == State.DealerWins ||
@@ -226,7 +215,7 @@ contract SecureBlockjack is GatewayCaller, SepoliaZamaFHEVMConfig, SepoliaZamaGa
             state == State.Tie;
     }
 
-    function _randomCard(bool revealable) private returns (euint8) {
+    function _randomCard(bool revealable) internal virtual returns (euint8) {
         euint8 card = TFHE.add(TFHE.rem(TFHE.randEuint8(), 13), _encryptPoints(2));
 
         TFHE.allowThis(card);
@@ -238,7 +227,7 @@ contract SecureBlockjack is GatewayCaller, SepoliaZamaFHEVMConfig, SepoliaZamaGa
         return card;
     }
 
-    function _rateCard(euint8 card) private returns (euint8) {
+    function _rateCard(euint8 card) internal returns (euint8) {
         return
             TFHE.select(
                 TFHE.lt(card, 11),
@@ -247,17 +236,17 @@ contract SecureBlockjack is GatewayCaller, SepoliaZamaFHEVMConfig, SepoliaZamaGa
             );
     }
 
-    function _rateCards(euint8[] memory cards) private returns (euint8) {
+    function _rateCards(euint8[] memory cards) internal returns (euint8) {
         euint8 total = TFHE.asEuint8(0);
 
-        for (uint8 index = 0; index < cards.length; index++) {
+        for (uint8 index = 0; index < cards.length; ++index) {
             total = TFHE.add(total, _rateCard(cards[index]));
         }
 
         return total;
     }
 
-    function _setState(Game storage game, address gameAddress, State state) private {
+    function _setState(Game storage game, address gameAddress, State state) internal {
         game.state = state;
 
         if (_isGameOver(state)) {
