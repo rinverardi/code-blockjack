@@ -11,6 +11,7 @@ const deployFunction: DeployFunction = async function (environment: HardhatRunti
     "NaiveBlockjack",
     "NaiveBlockjackForBenchmarks",
     "SecureBlockjack",
+    "SecureBlockjackForBenchmarks",
   ]) {
     await deploy(contract, { from: deployer, log: true });
   }
