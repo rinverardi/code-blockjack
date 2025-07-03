@@ -118,11 +118,11 @@ const SecureBlockjackForm = () => {
     } else if (state == State.Uninitialized) {
       return <button onClick={onClickCreateGame}>Create game</button>;
     } else if (state == State.WaitingForDealer) {
-      return <button onClick={onClickContinueGame}>Continue game</button>;
+      return <button onClick={onClickHitAsDealer}>Continue game</button>;
     } else if (state == State.WaitingForPlayer) {
       return (
         <>
-          <button onClick={onClickHit}>Hit</button>
+          <button onClick={onClickHitAsPlayer}>Hit</button>
           <button onClick={onClickStand}>Stand</button>
         </>
       );
@@ -209,21 +209,6 @@ const SecureBlockjackForm = () => {
     );
   }
 
-  async function onClickContinueGame() {
-    setProgress(Progress.Sending);
-
-    try {
-      const createGame = await contract!.continueGame(overrides);
-      await createGame.wait();
-
-      setProgressUnlessIdle(Progress.Receiving);
-    } catch (error) {
-      alert(error);
-
-      setProgress(Progress.Idle);
-    }
-  }
-
   async function onClickCreateGame() {
     setProgress(Progress.Sending);
 
@@ -254,7 +239,22 @@ const SecureBlockjackForm = () => {
     }
   }
 
-  async function onClickHit() {
+  async function onClickHitAsDealer() {
+    setProgress(Progress.Sending);
+
+    try {
+      const hitAsDealer = await contract!.hitAsDealer(overrides);
+      await hitAsDealer.wait();
+
+      setProgressUnlessIdle(Progress.Receiving);
+    } catch (error) {
+      alert(error);
+
+      setProgress(Progress.Idle);
+    }
+  }
+
+  async function onClickHitAsPlayer() {
     setProgress(Progress.Sending);
 
     try {
