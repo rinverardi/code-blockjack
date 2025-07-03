@@ -2,7 +2,7 @@ import type { HomomorphicArithmetic } from "@backend-types/contracts/demo/Homomo
 import { BrowserProvider, Contract, Signer } from "ethers";
 import { useEffect, useState } from "react";
 
-import { wrapContract, wrapInstance } from "../../lib/chaos";
+import { getInstance } from "../../lib/fhevm/fhevmjs";
 import { Progress, setProgress } from "../../lib/progress";
 
 const HomomorphicArithmeticForm = () => {
@@ -30,19 +30,21 @@ const HomomorphicArithmeticForm = () => {
           : "@backend-deployments/sepolia/HomomorphicArithmetic.json"
       );
 
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       const contract = new Contract(deployment.address, deployment.abi, signer) as Contract & HomomorphicArithmetic;
 
-      setContract(wrapContract(contract, "HomomorphicArithmetic"));
+      setContract(contract);
       setProgress(Progress.Idle);
-    })();
+    })().catch(console.error);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function getResult() {
     setProgress(Progress.Receiving);
 
-    const { publicKey, privateKey } = wrapInstance().generateKeypair();
+    const { publicKey, privateKey } = getInstance().generateKeypair();
 
-    const signatureData = wrapInstance().createEIP712(publicKey, await contract!.getAddress());
+    const signatureData = getInstance().createEIP712(publicKey, await contract!.getAddress());
 
     const signature = await signer!.signTypedData(
       signatureData.domain,
@@ -50,7 +52,7 @@ const HomomorphicArithmeticForm = () => {
       signatureData.message,
     );
 
-    return await wrapInstance().reencrypt(
+    return await getInstance().reencrypt(
       await contract!.getHandle(),
       privateKey,
       publicKey,
@@ -64,7 +66,7 @@ const HomomorphicArithmeticForm = () => {
     try {
       setAddParam0(BigInt(event.target.value));
     } catch (error) {
-      alert(error);
+      console.error(error);
     }
   }
 
@@ -72,7 +74,7 @@ const HomomorphicArithmeticForm = () => {
     try {
       setAddParam1(BigInt(event.target.value));
     } catch (error) {
-      alert(error);
+      console.error(error);
     }
   }
 
@@ -80,7 +82,7 @@ const HomomorphicArithmeticForm = () => {
     try {
       setMultiplyParam0(BigInt(event.target.value));
     } catch (error) {
-      alert(error);
+      console.error(error);
     }
   }
 
@@ -88,7 +90,7 @@ const HomomorphicArithmeticForm = () => {
     try {
       setMultiplyParam1(BigInt(event.target.value));
     } catch (error) {
-      alert(error);
+      console.error(error);
     }
   }
 
@@ -96,7 +98,7 @@ const HomomorphicArithmeticForm = () => {
     setProgress(Progress.Sending);
 
     try {
-      const input = await wrapInstance()
+      const input = await getInstance()
         .createEncryptedInput(await contract!.getAddress(), await signer!.getAddress())
         .add8(addParam0)
         .add8(addParam1)
@@ -107,7 +109,7 @@ const HomomorphicArithmeticForm = () => {
 
       setAddResult(await getResult());
     } catch (error) {
-      alert(error);
+      console.error(error);
     }
 
     setProgress(Progress.Idle);
@@ -117,7 +119,7 @@ const HomomorphicArithmeticForm = () => {
     setProgress(Progress.Sending);
 
     try {
-      const input = await wrapInstance()
+      const input = await getInstance()
         .createEncryptedInput(await contract!.getAddress(), await signer!.getAddress())
         .add8(multiplyParam0)
         .add8(multiplyParam1)
@@ -128,7 +130,7 @@ const HomomorphicArithmeticForm = () => {
 
       setMultiplyResult(await getResult());
     } catch (error) {
-      alert(error);
+      console.error(error);
     }
 
     setProgress(Progress.Idle);
@@ -143,7 +145,7 @@ const HomomorphicArithmeticForm = () => {
 
       setRandomResult(await getResult());
     } catch (error) {
-      alert(error);
+      console.error(error);
     }
 
     setProgress(Progress.Idle);

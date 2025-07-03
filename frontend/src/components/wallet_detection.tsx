@@ -1,6 +1,6 @@
 import { FC, ReactNode, useEffect, useState } from "react";
 
-import { init } from "../fhevmjs";
+import { init } from "../lib/fhevm/fhevmjs";
 
 type WalletDetectionProps = {
   children: ReactNode;
@@ -12,14 +12,11 @@ export const WalletDetection: FC<WalletDetectionProps> = ({ children }) => {
 
   useEffect(() => {
     (async () => {
-      await detect();
-      await initialize();
-    })();
-  }, []);
+      setDetected(!!window.ethereum);
 
-  async function detect() {
-    setDetected(!!window.ethereum);
-  }
+      await initialize();
+    })().catch(console.error);
+  }, []);
 
   async function initialize() {
     try {

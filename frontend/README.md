@@ -9,12 +9,12 @@
 
 This project uses a modern development stack to ensure maintainability and reliability:
 
-- [Ethers](https://ethers.org/)
-- [ESLint](https://eslint.org/)
-- [fhevmjs](https://docs.zama.ai/fhevm/references/fhevmjs)
-- [Prettier](https://prettier.io/)
-- [React](https://react.dev/)
-- [Vite](https://vite.dev/)
+- [ethers](https://github.com/ethers-io/ethers.js)
+- [ESLint](https://github.com/eslint/eslint)
+- [fhevmjs](https://github.com/zama-ai/fhevmjs)
+- [Prettier](https://github.com/prettier/prettier)
+- [React](https://github.com/facebook/react)
+- [Vite](https://github.com/vitejs/vite)
 
 ## Usage
 
@@ -28,11 +28,11 @@ Lint the code:
 
 Run against Hardhat:
 
-	$ npm run dev-mocked
+	$ npm run dev:hardhat
 
 Run against Sepolia:
 
-	$ npm run dev
+	$ npm run dev:sepolia
 
 Point your browser to [http://localhost:4173/](http://localhost:4173/).
 

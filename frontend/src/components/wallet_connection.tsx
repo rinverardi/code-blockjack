@@ -1,7 +1,7 @@
 import { BrowserProvider } from "ethers";
-import { FC, ReactNode, useEffect, useState } from "react";
+import { FC, ReactNode, useEffect, useMemo, useState } from "react";
 
-import { createFhevmInstance } from "../fhevmjs";
+import { createFhevmInstance } from "../lib/fhevm/fhevmjs";
 
 const CHAINS: Record<string, string> = {
   "0x1": "Ethereum",
@@ -17,13 +17,16 @@ export const WalletConnection: FC<WalletConnectionProps> = ({ children }) => {
   const [account, setAccount] = useState<string | null>(null);
   const [chain, setChain] = useState<string | null>(null);
 
-  const provider = new BrowserProvider(window.ethereum);
+  const provider = useMemo(() => new BrowserProvider(window.ethereum), []);
 
   useEffect(() => {
-    initialize();
+    (async () => {
+      await initialize();
 
-    window.ethereum.on("accountsChanged", initializeAgain);
-    window.ethereum.on("chainChanged", initializeAgain);
+      window.ethereum.on("accountsChanged", initializeAgain);
+      window.ethereum.on("chainChanged", initializeAgain);
+    })().catch(console.error);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function initialize() {
@@ -38,11 +41,11 @@ export const WalletConnection: FC<WalletConnectionProps> = ({ children }) => {
     setAccount(null);
     setChain(null);
 
-    initialize();
+    initialize().catch(console.error);
   }
 
   async function onClickConnect() {
-    const accounts: string[] = await provider!.send("eth_requestAccounts", []);
+    const accounts: string[] = await provider.send("eth_requestAccounts", []);
 
     if (accounts.length > 0) {
       setAccount(accounts[0]);
