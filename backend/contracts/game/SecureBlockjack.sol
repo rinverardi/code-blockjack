@@ -90,15 +90,6 @@ contract SecureBlockjack is GatewayCaller, SepoliaZamaFHEVMConfig, SepoliaZamaGa
         _setState(game, msg.sender, State.Checking);
     }
 
-    function continueGame() public {
-        Game storage game = _gameStructs[msg.sender];
-
-        require(game.state == State.WaitingForDealer, "Illegal state");
-
-        _dealDealer(game, 1);
-        _checkDealer(game);
-    }
-
     function createGame() public {
         Game storage game = _gameStructs[msg.sender];
 

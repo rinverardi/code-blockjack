@@ -24,7 +24,7 @@ contract HomomorphicArithmetic is GatewayCaller, SepoliaZamaFHEVMConfig, Sepolia
         return _handle;
     }
 
-    function multiplyValues(einput input0, einput input1, bytes calldata inputProof)  public {
+    function multiplyValues(einput input0, einput input1, bytes calldata inputProof) public {
         euint8 param0 = TFHE.asEuint8(input0, inputProof);
         euint8 param1 = TFHE.asEuint8(input1, inputProof);
 
