@@ -1,6 +1,6 @@
 import { FC, ReactNode, useEffect, useState } from "react";
 
-import { init } from "../fhevmjs";
+import { init } from "../lib/fhevm/fhevmjs";
 
 type WalletDetectionProps = {
   children: ReactNode;

@@ -1,7 +1,7 @@
 import { BrowserProvider } from "ethers";
 import { FC, ReactNode, useEffect, useState } from "react";
 
-import { createFhevmInstance } from "../fhevmjs";
+import { createFhevmInstance } from "../lib/fhevm/fhevmjs";
 
 const CHAINS: Record<string, string> = {
   "0x1": "Ethereum",

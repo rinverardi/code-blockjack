@@ -2,7 +2,7 @@ import type { SecureBlockjack } from "@backend-types/contracts/game/SecureBlockj
 import { BrowserProvider, Contract, Overrides, Signer } from "ethers";
 import { useEffect, useState } from "react";
 
-import { getInstance } from "../../fhevmjs";
+import { getInstance } from "../../lib/fhevm/fhevmjs";
 import { Progress, setProgress, setProgressUnlessIdle } from "../../lib/progress";
 import Card from "./card";
 
