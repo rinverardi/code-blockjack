@@ -58,6 +58,13 @@ Run the measurements on Sepolia:
 
 	$ npx hardhat test --network sepolia measurements/*.ts
 
+For reproducible results, the dockerized version should be used:
+
+	$ docker build -f Dockerfile.measure-gas -t blockjack.measure-gas .
+
+	$ docker run -t blockjack.measure-gas
+	$ docker run -t blockjack.measure-gas --network sepolia
+
 ### Testing against Hardhat
 
 In this mode, the tests are executed against a local Hardhat environment using a mocked coprocessor for simulated homomorphic encryption.
