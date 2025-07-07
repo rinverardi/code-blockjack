@@ -1,0 +1,19 @@
+FROM node:22
+
+WORKDIR /home/node/backend
+COPY contracts/ contracts/
+COPY deploy/ deploy/
+COPY .env .env
+COPY *.json ./
+COPY measurements/ measurements/
+COPY tasks/ tasks/
+COPY test/ test/
+COPY *.ts ./
+RUN chown -R node:node .
+
+USER node
+RUN npm install
+RUN npx hardhat deploy --network sepolia
+
+ENTRYPOINT ["npx", "hardhat", "test", "measurements/NaiveBlockjackMeasurements.ts", "measurements/SecureBlockjackMeasurements.ts"]
+CMD []
