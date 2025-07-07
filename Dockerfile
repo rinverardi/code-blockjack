@@ -16,4 +16,5 @@ RUN chown -R node:node .
 USER node
 RUN npm install
 RUN npx vite build
+
 CMD npx serve dist --no-clipboard
